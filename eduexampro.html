@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eduExamPRO | Edunexus Indonesia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        
+        :root {
+            --navy: #001f3f;
+            --orange: #ff8c00;
+        }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            -webkit-font-smoothing: antialiased; 
+            letter-spacing: -0.01em; 
+            background-color: #f8f9fa; 
+            color: #1a1a1a; 
+        }
+
+        .soft-card { 
+            background: #ffffff; 
+            border-radius: 2.5rem; 
+            border: 1px solid #e9ecef; 
+            box-shadow: 0 10px 40px -15px rgba(0, 31, 63, 0.05); 
+        }
+
+        .form-input { 
+            background-color: #f1f3f5; 
+            border: 1.5px solid transparent; 
+            border-radius: 1rem; 
+            padding: 0.75rem 1.25rem; 
+            font-size: 0.85rem; 
+            font-weight: 600; 
+            transition: all 0.3s; 
+            outline: none; 
+            width: 100%; 
+        }
+
+        .form-input:focus { 
+            background-color: #fff; 
+            border-color: var(--orange); 
+            box-shadow: 0 0 0 4px rgba(255, 140, 0, 0.1); 
+        }
+
+        .qty-box { 
+            width: 75px; 
+            text-align: center; 
+            font-weight: 800; 
+            background: #fff; 
+            border: 2px solid #dee2e6; 
+            border-radius: 0.8rem; 
+            padding: 0.5rem; 
+            font-size: 0.9rem; 
+            color: var(--navy);
+        }
+
+        .custom-check { 
+            display: flex; 
+            align-items: center; 
+            gap: 0.6rem; 
+            padding: 0.8rem 1rem; 
+            background: #f1f3f5; 
+            border-radius: 1rem; 
+            cursor: pointer; 
+            font-size: 0.75rem; 
+            font-weight: 800; 
+            border: 1.5px solid transparent; 
+            transition: 0.2s; 
+            text-transform: uppercase;
+        }
+
+        input[type="checkbox"]:checked + .custom-check { 
+            background: #fff4e6; 
+            border-color: var(--orange); 
+            color: var(--orange); 
+        }
+
+        .btn-navy {
+            background-color: var(--navy);
+            color: white;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-navy:hover:not(:disabled) {
+            background-color: #001326;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 31, 63, 0.2);
+        }
+
+        .toast { 
+            position: fixed; 
+            top: 2rem; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            background: var(--navy); 
+            color: white; 
+            padding: 1.2rem 2.5rem; 
+            border-radius: 2rem; 
+            font-size: 0.9rem; 
+            font-weight: 800; 
+            display: none; 
+            z-index: 9999; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.4); 
+            border-bottom: 4px solid var(--orange);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .animate-pop { animation: pop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes pop {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-32">
+
+    <script>
+        const CENTRAL_AUTH_URL = "https://script.google.com/macros/s/AKfycbwZ4yAU4aXx3vSMLUzJTYCJ1ufHBlqu3ZnHhj6heCYcJsBMA5aHGCIXIgZKdlFcGLmCmw/exec";
+        (async function checkAccess() {
+            const email = localStorage.getItem('edunexus_email'); 
+            const wa = localStorage.getItem('edunexus_wa');
+            if (!email || !wa) { window.location.href = "login.html"; return; }
+            try {
+                const res = await (await fetch(`${CENTRAL_AUTH_URL}?email=${email}&wa=${wa}`)).json();
+                if (res.status !== "found" || res.userStatus !== "Active" || (res.plan === "silver" && res.app !== "eduExamPRO")) { 
+                    window.location.href = "login.html"; 
+                    return; 
+                }
+                document.getElementById('navUser').innerText = email;
+            } catch (e) { console.error("Access check failed."); }
+        })();
+    </script>
+
+    <nav class="bg-white border-b sticky top-0 z-50 px-8 h-16 flex justify-between items-center shadow-sm">
+        <div class="flex items-center gap-2">
+            <div class="h-9 w-9 bg-[#001f3f] rounded-xl flex items-center justify-center text-white italic shadow-md border-b-2 border-[#ff8c00]">eX</div>
+            <span class="text-[#001f3f] font-black italic tracking-tighter text-xl uppercase">edu<span class="text-[#ff8c00]">ExamPRO</span></span>
+        </div>
+        <div class="flex items-center gap-6 text-[10px] font-bold uppercase tracking-widest text-slate-400">
+            <span id="navUser" class="hidden md:block tracking-tighter"></span>
+            <button onclick="localStorage.clear(); location.href='login.html'" class="text-red-500 hover:text-red-700 transition-colors uppercase font-black">Logout</button>
+        </div>
+    </nav>
+
+    <main class="max-w-4xl mx-auto px-6 py-12 space-y-12">
+        
+        <div class="text-center md:text-left">
+            <h2 class="text-4xl font-[800] text-[#001f3f] tracking-tight italic leading-none">Smart Assessment Builder</h2>
+            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-[0.3em] mt-3 opacity-70">AI-Powered Exam Management System</p>
+        </div>
+
+        <div class="grid gap-12">
+            
+            <div class="bg-white p-10 soft-card space-y-8">
+                <div class="text-[10px] font-black text-[#ff8c00] uppercase tracking-widest flex items-center gap-2">
+                    <span class="w-6 h-6 bg-[#fff4e6] rounded-full flex items-center justify-center italic text-[10px] text-[#ff8c00]">1</span> IDENTITAS DAN MATERI
+                </div>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <label class="text-[9px] font-black text-slate-400 ml-1 uppercase mb-2 block tracking-widest">Mata Pelajaran</label>
+                        <input type="text" id="mapel" placeholder="Contoh: Matematika" class="form-input">
+                    </div>
+                    <div>
+                        <label class="text-[9px] font-black text-slate-400 ml-1 uppercase mb-2 block tracking-widest">Jenjang Kelas</label>
+                        <select id="jenjang" class="form-input font-bold text-[#001f3f]">
+                            <option value="">-- Pilih Jenjang --</option>
+                            <option value="PAUD">PAUD</option>
+                            <option value="TK">TK</option>
+                            <optgroup label="Sekolah Dasar (SD)">
+                                <option value="Kelas 1 SD">Kelas 1 SD</option><option value="Kelas 2 SD">Kelas 2 SD</option><option value="Kelas 3 SD">Kelas 3 SD</option>
+                                <option value="Kelas 4 SD">Kelas 4 SD</option><option value="Kelas 5 SD">Kelas 5 SD</option><option value="Kelas 6 SD">Kelas 6 SD</option>
+                            </optgroup>
+                            <optgroup label="Sekolah Menengah Pertama (SMP)">
+                                <option value="Kelas 7 SMP">Kelas 7 SMP</option><option value="Kelas 8 SMP">Kelas 8 SMP</option><option value="Kelas 9 SMP">Kelas 9 SMP</option>
+                            </optgroup>
+                            <optgroup label="Sekolah Menengah Atas (SMA)">
+                                <option value="Kelas 10 SMA">Kelas 10 SMA</option><option value="Kelas 11 SMA">Kelas 11 SMA</option><option value="Kelas 12 SMA">Kelas 12 SMA</option>
+                            </optgroup>
+                        </select>
+                    </div>
+                </div>
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <label class="text-[9px] font-black text-slate-400 ml-1 uppercase mb-2 block tracking-widest">Kurikulum</label>
+                        <select id="kurikulum" class="form-input font-bold text-[#001f3f]">
+                            <option value="Kurikulum Merdeka">Kurikulum Merdeka</option>
+                            <option value="Kurikulum 2013">Kurikulum 2013</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-[9px] font-black text-slate-400 ml-1 uppercase mb-2 block tracking-widest">Topik / Materi Spesifik</label>
+                        <input type="text" id="topik" placeholder="Contoh: Turunan Fungsi" class="form-input">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-[9px] font-black text-slate-400 ml-1 uppercase mb-2 block tracking-widest">Indikator / Tujuan Pembelajaran</label>
+                    <textarea id="indikator" rows="2" placeholder="..." class="form-input"></textarea>
+                </div>
+            </div>
+
+            <div class="bg-white p-10 soft-card space-y-10">
+                <div class="text-[10px] font-black text-[#ff8c00] uppercase tracking-widest flex items-center gap-2">
+                    <span class="w-6 h-6 bg-[#fff4e6] rounded-full flex items-center justify-center italic text-[10px] text-[#ff8c00]">2</span> LEVEL KOGNITIF DAN KESULITAN
+                </div>
+                <div>
+                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-5 block">Target Level Kognitif (Bloom's Taxonomy)</label>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
+                        <label class="relative"><input type="checkbox" name="bloom" value="C1-Mengingat" class="hidden peer"><div class="custom-check peer-checked:bg-[#fff4e6]">C1-Mengingat</div></label>
+                        <label class="relative"><input type="checkbox" name="bloom" value="C2-Memahami" class="hidden peer"><div class="custom-check peer-checked:bg-[#fff4e6]">C2-Memahami</div></label>
+                        <label class="relative"><input type="checkbox" name="bloom" value="C3-Menerapkan" class="hidden peer"><div class="custom-check peer-checked:bg-[#fff4e6]">C3-Menerapkan</div></label>
+                        <label class="relative"><input type="checkbox" name="bloom" value="C4-Menganalisis" class="hidden peer"><div class="custom-check peer-checked:bg-[#fff4e6]">C4-Menganalisis</div></label>
+                        <label class="relative"><input type="checkbox" name="bloom" value="C5-Mengevaluasi" class="hidden peer"><div class="custom-check peer-checked:bg-[#fff4e6]">C5-Mengevaluasi</div></label>
+                        <label class="relative"><input type="checkbox" name="bloom" value="C6-Mencipta" class="hidden peer"><div class="custom-check peer-checked:bg-[#fff4e6]">C6-Mencipta</div></label>
+                    </div>
+                </div>
+                <div class="pt-8 border-t border-slate-100">
+                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-6 block">Distribusi Jumlah Soal (Berdasarkan Kesulitan)</label>
+                    <div class="grid grid-cols-3 gap-8 text-center">
+                        <div><p class="text-[8px] font-black text-slate-300 uppercase mb-3">Mudah</p><input type="number" id="qty_mudah" oninput="syncSums()" class="qty-box" value="0" min="0"></div>
+                        <div><p class="text-[8px] font-black text-slate-300 uppercase mb-3">Sedang</p><input type="number" id="qty_sedang" oninput="syncSums()" class="qty-box" value="0" min="0"></div>
+                        <div><p class="text-[8px] font-black text-slate-300 uppercase mb-3">Sukar</p><input type="number" id="qty_sukar" oninput="syncSums()" class="qty-box" value="0" min="0"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-10 soft-card space-y-10">
+                <div class="text-[10px] font-black text-[#ff8c00] uppercase tracking-widest flex items-center gap-2">
+                    <span class="w-6 h-6 bg-[#fff4e6] rounded-full flex items-center justify-center italic text-[10px] text-[#ff8c00]">3</span> FORMAT DAN VISUAL
+                </div>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <label class="relative"><input type="checkbox" id="ai_pic" class="hidden peer"><div class="custom-check peer-checked:bg-[#fff4e6] py-5"><i class="fas fa-image mr-2 opacity-50"></i> AI Picture Prompt</div></label>
+                    <label class="relative"><input type="checkbox" id="ai_narr" class="hidden peer"><div class="custom-check peer-checked:bg-[#fff4e6] py-5"><i class="fas fa-file-alt mr-2 opacity-50"></i> AI Narrative Text</div></label>
+                </div>
+                <div>
+                    <div class="flex justify-between items-center mb-8">
+                        <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest">Jenis & Jumlah Soal</label>
+                        <div id="sum_warning" class="text-[10px] font-black text-red-500 uppercase italic hidden animate-pulse">! Total Soal Tidak Sama</div>
+                        <div class="text-[10px] font-black text-[#001f3f] bg-slate-100 px-5 py-2 rounded-full">Alokasi: <span id="total_type" class="text-[#ff8c00]">0</span> / <span id="total_diff">0</span></div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-200"><span class="text-[10px] font-bold text-slate-500 uppercase ml-2">Pilihan Ganda</span><input type="number" id="q_pg" oninput="syncSums()" class="qty-box" value="0"></div>
+                        <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-200"><span class="text-[10px] font-bold text-slate-500 uppercase ml-2">PG Kompleks</span><input type="number" id="q_pgk" oninput="syncSums()" class="qty-box" value="0"></div>
+                        <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-200"><span class="text-[10px] font-bold text-slate-500 uppercase ml-2">Benar / Salah</span><input type="number" id="q_bs" oninput="syncSums()" class="qty-box" value="0"></div>
+                        <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-200"><span class="text-[10px] font-bold text-slate-500 uppercase ml-2">Menjodohkan</span><input type="number" id="q_match" oninput="syncSums()" class="qty-box" value="0"></div>
+                        <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-200"><span class="text-[10px] font-bold text-slate-500 uppercase ml-2">Isian Singkat</span><input type="number" id="q_short" oninput="syncSums()" class="qty-box" value="0"></div>
+                        <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-200"><span class="text-[10px] font-bold text-slate-500 uppercase ml-2">Uraian / Esai</span><input type="number" id="q_essay" oninput="syncSums()" class="qty-box" value="0"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                <button id="btnGen" onclick="generatePrompt()" class="w-full btn-navy py-6 rounded-[2.5rem] font-black text-sm uppercase tracking-[0.3em] shadow-2xl transform active:scale-95 disabled:opacity-30 disabled:cursor-not-allowed">
+                    <i class="fas fa-bolt mr-2 text-[#ff8c00]"></i> GENERATE PROMPT
+                </button>
+                
+                <div id="aiButtons" class="hidden grid grid-cols-1 md:grid-cols-2 gap-5 animate-pop">
+                    <a href="https://gemini.google.com" target="_blank" class="bg-[#1a73e8] text-white py-5 rounded-[2.5rem] text-center font-black text-[10px] uppercase tracking-widest shadow-xl flex items-center justify-center gap-3 hover:brightness-110 transition-all">
+                        <i class="fas fa-sparkles text-yellow-300"></i> Buat soal dengan Gemini
+                    </a>
+                    <a href="https://www.chatgpt.com" target="_blank" class="bg-[#10a37f] text-white py-5 rounded-[2.5rem] text-center font-black text-[10px] uppercase tracking-widest shadow-xl flex items-center justify-center gap-3 hover:brightness-110 transition-all">
+                        <i class="fas fa-robot"></i> Buat soal dengan Chat GPT
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div id="toast" class="toast"><i class="fas fa-check-circle mr-2 text-[#ff8c00]"></i> PROMPT BERHASIL DISALIN!</div>
+
+    <script>
+        function syncSums() {
+            const diffSum = (parseInt(document.getElementById('qty_mudah').value)||0) + (parseInt(document.getElementById('qty_sedang').value)||0) + (parseInt(document.getElementById('qty_sukar').value)||0);
+            const typeSum = (parseInt(document.getElementById('q_pg').value)||0) + (parseInt(document.getElementById('q_pgk').value)||0) + (parseInt(document.getElementById('q_bs').value)||0) + (parseInt(document.getElementById('q_match').value)||0) + (parseInt(document.getElementById('q_short').value)||0) + (parseInt(document.getElementById('q_essay').value)||0);
+            
+            document.getElementById('total_diff').innerText = diffSum;
+            document.getElementById('total_type').innerText = typeSum;
+            
+            const btn = document.getElementById('btnGen');
+            const warn = document.getElementById('sum_warning');
+
+            if(diffSum !== typeSum || diffSum === 0) {
+                warn.classList.remove('hidden');
+                btn.disabled = true;
+            } else {
+                warn.classList.add('hidden');
+                btn.disabled = false;
+            }
+        }
+
+        async function generatePrompt() {
+            const mapel = document.getElementById('mapel').value;
+            const jenjang = document.getElementById('jenjang').value;
+            const kurikulum = document.getElementById('kurikulum').value;
+            const topik = document.getElementById('topik').value;
+            const indikator = document.getElementById('indikator').value;
+            const blooms = Array.from(document.querySelectorAll('input[name="bloom"]:checked')).map(e => e.value).join(", ");
+            const totalTarget = document.getElementById('total_type').innerText;
+            
+            if(!mapel || !jenjang || !topik) { alert("Data identitas belum lengkap!"); return; }
+
+            let optRule = "5 Opsi (A,B,C,D,E)";
+            if(jenjang.includes("SD") || jenjang === "PAUD" || jenjang === "TK") optRule = "3 Opsi (A,B,C)";
+            else if(jenjang.includes("SMP")) optRule = "4 Opsi (A,B,C,D)";
+
+            let p = `Bertindaklah sebagai ahli pembuat soal ujian profesional yang teliti. 
+            Tugas: Buatlah lengkap seluruh butir soal tanpa diringkas atau preview. Tulis EXACTLY ${totalTarget} butir soal sesuai pengaturan.
+            
+            DATA SPESIFIKASI:
+            - Mata Pelajaran: ${mapel} (${jenjang})
+            - Kurikulum: ${kurikulum}
+            - Topik: ${topik}
+            - Indikator: ${indikator}
+            - Level Kognitif: ${blooms || "Standar Kurikulum"}
+            - Distribusi Kesulitan: Mudah(${document.getElementById('qty_mudah').value}), Sedang(${document.getElementById('qty_sedang').value}), Sukar(${document.getElementById('qty_sukar').value})
+            
+            RINCIAN FORMAT PENULISAN (WAJIB DIPATUHI):`;
+            
+            if(document.getElementById('q_pg').value > 0) {
+                p += `\n- ${document.getElementById('q_pg').value} Pilihan Ganda: BUAT TABEL 2 KOLOM (Nomor | Isi Soal lengkap dengan ${optRule}).`;
+            }
+            if(document.getElementById('q_pgk').value > 0) {
+                p += `\n- ${document.getElementById('q_pgk').value} PG Kompleks: Tulis instruksi 'Jawaban lebih dari satu'.`;
+            }
+            if(document.getElementById('q_bs').value > 0) {
+                p += `\n- ${document.getElementById('q_bs').value} Benar / Salah: BUAT TABEL 4 KOLOM (Nomor | Pernyataan | Benar [ ] | SALAH [ ]).`;
+            }
+            if(document.getElementById('q_match').value > 0) {
+                p += `\n- ${document.getElementById('q_match').value} Menjodohkan: BUAT TABEL 4 KOLOM (No. | Tempat Jawaban | Pernyataan | Pilihan Pasangan Acak di sisi kanan).`;
+            }
+            if(document.getElementById('q_short').value > 0) p += `\n- ${document.getElementById('q_short').value} Isian Singkat.`;
+            if(document.getElementById('q_essay').value > 0) p += `\n- ${document.getElementById('q_essay').value} Uraian / Esai.`;
+
+            if(document.getElementById('ai_narr').checked) p += `\n\n[PENTING] Sertakan teks narasi stimulus bacaan yang mendalam sebelum butir soal dimulai.`;
+            if(document.getElementById('ai_pic').checked) p += `\n[VISUAL] Sertakan AI Picture Prompt dalam kurung siku di awal butir soal yang membutuhkan ilustrasi.`;
+
+            p += `\n\n=== OUTPUT AKHIR ===\n1. Kisi-kisi Soal Lengkap\n2. Semua Butir Soal Sesuai Format Tabel di atas (TOTAL ${totalTarget} SOAL).\n3. Tabel Kunci Jawaban & Pembahasan Mendalam.\n\nKerjakan sekarang secara lengkap dan profesional.`;
+
+            try {
+                await navigator.clipboard.writeText(p);
+                const t = document.getElementById('toast');
+                t.style.display = 'block';
+                setTimeout(() => { t.style.display = 'none'; }, 4000);
+                document.getElementById('aiButtons').classList.remove('hidden');
+                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            } catch (err) {
+                alert("Gagal copy otomatis. Harap copy manual.");
+            }
+        }
+    </script>
+</body>
+</html>

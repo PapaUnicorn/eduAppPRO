@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Edunexus PRO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-font-smoothing: antialiased; letter-spacing: -0.01em; }
+        .soft-shadow { box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05); }
+    </style>
+</head>
+<body class="bg-[#fcfcfd] p-8 md:p-12">
+    <div id="auth" class="max-w-sm mx-auto bg-white p-12 rounded-[2.5rem] soft-shadow border border-slate-100 text-center">
+        <h2 class="text-lg font-[800] mb-8 uppercase tracking-tight">Admin Access</h2>
+        <input type="password" id="pass" placeholder="Password Admin" class="w-full p-4 bg-slate-50 border-0 rounded-2xl mb-6 text-center outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-sm">
+        <button onclick="auth()" class="w-full bg-slate-900 text-white font-bold py-4 rounded-2xl text-[10px] uppercase tracking-widest hover:bg-blue-600 transition-all duration-500">MASUK</button>
+    </div>
+
+    <div id="cont" class="hidden max-w-5xl mx-auto">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-12 gap-6">
+            <h1 class="text-2xl font-[800] text-slate-800 tracking-tight italic leading-none">Kelola Aktivasi User</h1>
+            <button onclick="fetchU()" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-blue-50 transition-all">Refresh Data</button>
+        </div>
+        <div class="bg-white rounded-[2.5rem] soft-shadow border border-slate-100 overflow-hidden">
+            <table class="w-full text-left">
+                <thead class="bg-slate-50 border-b border-slate-100 text-[9px] font-[800] uppercase text-slate-400 tracking-[0.2em]">
+                    <tr><th class="p-8">Nama / WhatsApp</th><th class="p-8 text-center">Bukti Bayar</th><th class="p-8">Status</th><th class="p-8 text-right">Aksi</th></tr>
+                </thead>
+                <tbody id="tbl" class="text-xs font-medium text-slate-600"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwZ4yAU4aXx3vSMLUzJTYCJ1ufHBlqu3ZnHhj6heCYcJsBMA5aHGCIXIgZKdlFcGLmCmw/exec";
+        const ADMIN_PASS = "Be1414nk"; // Password Anda
+        function auth() {
+            if(document.getElementById('pass').value === ADMIN_PASS) { document.getElementById('auth').classList.add('hidden'); document.getElementById('cont').classList.remove('hidden'); fetchU(); } else { alert("Akses Ditolak!"); }
+        }
+        async function fetchU() {
+            const tbl = document.getElementById('tbl'); tbl.innerHTML = `<tr><td colspan="4" class="p-16 text-center text-slate-300 font-bold tracking-widest animate-pulse">MEMUAT DATA...</td></tr>`;
+            try {
+                const res = await (await fetch(`${SCRIPT_URL}?action=getUsers`)).json(); tbl.innerHTML = "";
+                res.forEach(u => {
+                    const btn = u.status === "Pending" ? `<button onclick="act('${u.email}', '${u.wa}')" class="bg-blue-600 text-white px-4 py-2 rounded-xl font-bold text-[9px] uppercase tracking-widest">AKTIFKAN</button>` : `<span class="text-green-500 font-bold text-[9px] uppercase tracking-widest">AKTIF</span>`;
+                    tbl.innerHTML += `
+                        <tr class="border-b border-slate-50 hover:bg-slate-50 transition-all duration-300">
+                            <td class="p-8"><p class="font-bold text-slate-800">${u.name}</p><p class="text-[10px] text-slate-300 mt-1">${u.wa}</p></td>
+                            <td class="p-8 text-center"><a href="${u.proof}" target="_blank" class="bg-slate-100 text-blue-600 px-3 py-1 rounded-lg text-[9px] font-bold uppercase tracking-widest">Bukti</a></td>
+                            <td class="p-8"><span class="px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest ${u.status === 'Active' ? 'bg-green-50 text-green-600' : 'bg-orange-50 text-orange-600'}">${u.status}</span></td>
+                            <td class="p-8 text-right">${btn}</td>
+                        </tr>`;
+                });
+            } catch (e) { alert("Error."); }
+        }
+        async function act(email, wa) {
+            if(!confirm("Aktifkan akun?")) return;
+            try { await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "updateStatus", email: email, wa: wa }) }); alert("Berhasil!"); fetchU(); } catch (e) { alert("Gagal."); }
+        }
+    </script>
+</body>
+</html>
