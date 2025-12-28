@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0f172a">
+    <title>Register - Edunexus PRO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="js/api.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            letter-spacing: -0.01em;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.05);
+        }
+
+        .glass-input {
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(226, 232, 240, 0.6);
+            transition: all 0.3s ease;
+        }
+
+        .glass-input:focus {
+            background: #ffffff;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+    </style>
+</head>
+
+<body class="bg-slate-50 relative min-h-screen text-slate-900 overflow-x-hidden selection:bg-blue-500/30">
+
+    <!-- Background -->
+    <div class="fixed inset-0 z-0 pointer-events-none">
+        <div
+            class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-400/20 rounded-full blur-[120px] animate-pulse">
+        </div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-purple-400/20 rounded-full blur-[120px] animate-pulse"
+            style="animation-delay: 2s;"></div>
+    </div>
+
+    <div class="relative z-10 flex items-center justify-center min-h-screen p-6 my-8">
+        <div
+            class="glass-panel p-8 md:p-10 rounded-[2.5rem] w-full max-w-[600px] transform transition-all duration-700">
+
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-[900] text-slate-900 mb-2">Pendaftaran Baru</h2>
+                <p class="text-slate-500 text-sm font-medium">Lengkapi data diri Anda untuk bergabung</p>
+            </div>
+
+            <form id="regForm" class="space-y-5" onsubmit="handleRegister(event)">
+
+                <!-- Username -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Username</label>
+                    <input type="text" id="username" required
+                        class="glass-input w-full px-4 py-3 rounded-xl text-sm font-bold text-slate-700 placeholder:text-slate-400 focus:outline-none"
+                        placeholder="Buat username unik">
+                </div>
+
+                <!-- Role -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Role</label>
+                    <div class="relative">
+                        <select id="role" required
+                            class="glass-input w-full px-4 py-3 rounded-xl text-sm font-bold text-slate-700 focus:outline-none appearance-none cursor-pointer">
+                            <option value="Guru">Guru</option>
+                            <option value="Siswa">Siswa</option>
+                            <option value="Orang Tua">Orang Tua</option>
+                            <option value="Umum">Umum</option>
+                        </select>
+                        <i
+                            class="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none text-xs"></i>
+                    </div>
+                </div>
+
+                <!-- Nama Lengkap -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Nama
+                        Lengkap</label>
+                    <input type="text" id="fullName" required
+                        class="glass-input w-full px-4 py-3 rounded-xl text-sm font-bold text-slate-700 placeholder:text-slate-400 focus:outline-none"
+                        placeholder="Sesuai KTP/Kartu Pelajar">
+                </div>
+
+                <!-- Email -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Email
+                        Address</label>
+                    <input type="email" id="email" required
+                        class="glass-input w-full px-4 py-3 rounded-xl text-sm font-bold text-slate-700 placeholder:text-slate-400 focus:outline-none"
+                        placeholder="email@contoh.com">
+                </div>
+
+                <!-- WhatsApp -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Nomor
+                        WhatsApp</label>
+                    <input type="tel" id="wa" required
+                        class="glass-input w-full px-4 py-3 rounded-xl text-sm font-bold text-slate-700 placeholder:text-slate-400 focus:outline-none"
+                        placeholder="081234567890 (Akan menjadi Password)">
+                    <p class="mt-1 text-[10px] text-blue-500 font-bold">* Nomor ini akan digunakan sebagai Password
+                        Login</p>
+                </div>
+
+                <!-- Paket -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Pilihan
+                        Paket</label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <label class="cursor-pointer">
+                            <input type="radio" name="package" value="Gold" onchange="toggleDetails()"
+                                class="peer sr-only">
+                            <div
+                                class="p-4 rounded-xl border-2 border-slate-100 peer-checked:border-yellow-400 peer-checked:bg-yellow-50/50 transition-all text-center">
+                                <div class="font-[900] text-yellow-600">GOLD</div>
+                                <div class="text-[10px] text-slate-400 font-bold">Akses Semua</div>
+                            </div>
+                        </label>
+                        <label class="cursor-pointer">
+                            <input type="radio" name="package" value="Silver" onchange="toggleDetails()"
+                                class="peer sr-only">
+                            <div
+                                class="p-4 rounded-xl border-2 border-slate-100 peer-checked:border-slate-400 peer-checked:bg-slate-50 transition-all text-center">
+                                <div class="font-[900] text-slate-600">SILVER</div>
+                                <div class="text-[10px] text-slate-400 font-bold">Pilih Aplikasi</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Paket Details (Silver Only) -->
+                <div id="detailsBox" class="hidden animate-fade-in-down">
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Pilih Satu
+                        Aplikasi</label>
+                    <div class="space-y-2">
+                        <label
+                            class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 cursor-pointer hover:bg-white hover:border-blue-400 transition-all">
+                            <input type="radio" name="silverApp" value="eduLessonPRO"
+                                class="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                            <span class="text-sm font-bold text-slate-700">eduLessonPRO</span>
+                        </label>
+                        <label
+                            class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 cursor-pointer hover:bg-white hover:border-blue-400 transition-all">
+                            <input type="radio" name="silverApp" value="eduExamPRO"
+                                class="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                            <span class="text-sm font-bold text-slate-700">eduExamPRO</span>
+                        </label>
+                        <label
+                            class="flex items-center gap-3 p-3 rounded-xl border border-slate-200 cursor-pointer hover:bg-white hover:border-blue-400 transition-all">
+                            <input type="radio" name="silverApp" value="eduTeachPRO"
+                                class="w-4 h-4 text-blue-600 focus:ring-blue-500 border-gray-300">
+                            <span class="text-sm font-bold text-slate-700">eduTeachPRO</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Bukti Bayar -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">Bukti
+                        Pembayaran</label>
+                    <div class="relative group cursor-pointer">
+                        <input type="file" id="proof" required accept="image/*"
+                            class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                            onchange="updateFileName(this)">
+                        <div
+                            class="glass-input w-full px-4 py-8 rounded-xl border-2 border-dashed border-slate-300 flex flex-col items-center justify-center gap-2 group-hover:border-blue-400 transition-colors">
+                            <i
+                                class="fas fa-cloud-upload-alt text-2xl text-slate-400 group-hover:text-blue-500 transition-colors"></i>
+                            <span id="fileNameDisplay" class="text-xs font-bold text-slate-500">Klik untuk upload bukti
+                                transfer</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit -->
+                <button type="submit" id="btnSubmit"
+                    class="w-full bg-slate-900 text-white py-4 rounded-xl font-[900] text-sm uppercase tracking-widest shadow-xl shadow-slate-900/20 hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:shadow-blue-500/30 hover:-translate-y-1 transition-all duration-500 mt-4 relative overflow-hidden group">
+                    <span id="btnText" class="relative z-10">DAFTAR SEKARANG</span>
+                    <div
+                        class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500">
+                    </div>
+                </button>
+
+                <p class="text-center text-xs font-bold text-slate-400 mt-4">Sudah punya akun? <a href="login.html"
+                        class="text-blue-600 hover:underline">Masuk</a></p>
+
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function toggleDetails() {
+            const isSilver = document.querySelector('input[name="package"][value="Silver"]').checked;
+            const box = document.getElementById('detailsBox');
+            if (isSilver) {
+                box.classList.remove('hidden');
+            } else {
+                box.classList.add('hidden');
+                // Clear selection
+                const radios = document.querySelectorAll('input[name="silverApp"]');
+                radios.forEach(r => r.checked = false);
+            }
+        }
+
+        function updateFileName(input) {
+            const display = document.getElementById('fileNameDisplay');
+            if (input.files && input.files[0]) {
+                display.innerText = input.files[0].name;
+                display.classList.add('text-blue-600');
+            } else {
+                display.innerText = "Klik untuk upload bukti transfer";
+                display.classList.remove('text-blue-600');
+            }
+        }
+
+        async function handleRegister(e) {
+            e.preventDefault();
+
+            const btn = document.getElementById('btnSubmit');
+            const btnText = document.getElementById('btnText');
+            const originalText = btnText.innerText;
+
+            // Loading State
+            btn.disabled = true;
+            btnText.innerText = "MENGUPLOAD...";
+            btn.classList.add('opacity-75', 'cursor-not-allowed');
+
+            try {
+                // Collect Data
+                const fileInput = document.getElementById('proof');
+                const file = fileInput.files[0];
+
+                let fileData = "";
+                if (file) {
+                    fileData = await toBase64(file);
+                    // Remove header "data:image/png;base64,"
+                    fileData = fileData.split(',')[1];
+                }
+
+                // Calculate Package Details
+                let pkgDetails = "-";
+                const pkgTier = document.querySelector('input[name="package"]:checked')?.value || "Silver";
+
+                if (pkgTier === "Silver") {
+                    const selectedApp = document.querySelector('input[name="silverApp"]:checked');
+                    if (!selectedApp) {
+                        alert("Silakan pilih salah satu aplikasi untuk paket Silver.");
+                        btn.disabled = false;
+                        btnText.innerText = originalText;
+                        btn.classList.remove('opacity-75', 'cursor-not-allowed');
+                        return;
+                    }
+                    pkgDetails = selectedApp.value;
+                }
+
+                const payload = {
+                    action: 'register',
+                    username: document.getElementById('username').value,
+                    role: document.getElementById('role').value,
+                    fullName: document.getElementById('fullName').value,
+                    email: document.getElementById('email').value,
+                    wa: document.getElementById('wa').value,
+                    packageTier: pkgTier,
+                    packageDetails: pkgDetails,
+                    fileName: file ? file.name : "",
+                    mimeType: file ? file.type : "",
+                    fileData: fileData
+                };
+
+                const res = await fetch(API_CONFIG.BASE_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await res.json();
+
+                if (result.status === 'success') {
+                    alert('Pendaftaran Berhasil! Silakan tunggu konfirmasi admin atau coba login.');
+                    window.location.href = 'login.html';
+                } else {
+                    alert('Gagal: ' + result.message);
+                }
+
+            } catch (err) {
+                console.error(err);
+                alert('Terjadi kesalahan koneksi. Pastikan URL Script benar.');
+            } finally {
+                btn.disabled = false;
+                btnText.innerText = originalText;
+                btn.classList.remove('opacity-75', 'cursor-not-allowed');
+            }
+        }
+
+        const toBase64 = file => new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = error => reject(error);
+        });
+    </script>
+</body>
+
+</html>
