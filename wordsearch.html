@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Search Bentuk - Print Ready</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --highlight-color: #f1c40f;
+            --found-color: #2ecc71;
+            --bg-color: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        h1, .subtitle { text-align: center; }
+        h1 { color: var(--primary-color); margin-bottom: 5px; }
+        .subtitle { margin-bottom: 20px; color: #666; font-size: 0.9em; }
+
+        /* --- LAYOUT UTAMA --- */
+        .main-wrapper {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            max-width: 1200px;
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* --- PANEL KONFIGURASI (KIRI) --- */
+        .config-panel {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            width: 280px;
+            flex-shrink: 0;
+        }
+
+        .config-section { margin-bottom: 15px; }
+        .config-section label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px;}
+        
+        textarea {
+            width: 100%;
+            height: 120px;
+            box-sizing: border-box;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-family: monospace;
+            resize: vertical;
+        }
+
+        select {
+            width: 100%;
+            padding: 8px;
+            border-radius: 6px;
+            border: 1px solid #ccc;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 5px;
+            background: #f9f9f9;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 6px;
+        }
+        .checkbox-item { display: flex; align-items: center; font-size: 13px; }
+        .checkbox-item input { margin-right: 8px; }
+
+        /* --- AREA GAME (KANAN) --- */
+        .game-panel {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-width: 500px;
+        }
+
+        .student-header {
+            display: none;
+            width: 100%;
+            margin-bottom: 20px;
+            border-bottom: 2px solid black;
+            padding-bottom: 10px;
+        }
+        .student-info-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 14pt;
+        }
+
+        /* GRID SYSTEM */
+        #grid-container {
+            display: grid;
+            grid-template-columns: repeat(15, 30px); /* Default 15 */
+            gap: 1px;
+            margin-bottom: 20px;
+            /* Background transparan agar bentuk terlihat */
+            background-color: transparent; 
+        }
+
+        .cell {
+            width: 30px;
+            height: 30px;
+            background-color: white;
+            border: 1px solid #ccc; /* Border default */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 16px;
+            text-transform: uppercase;
+            user-select: none;
+        }
+
+        /* CELL UNTUK TOPENG (Bentuk) */
+        .cell.mask-empty {
+            background-color: transparent !important;
+            border: none !important; /* Hilangkan garis jika bukan bagian bentuk */
+            color: transparent;
+        }
+        
+        .cell.found { background-color: var(--found-color); color: white; border-color: var(--found-color); }
+
+        /* List Kata */
+        .word-list-container { width: 100%; text-align: center; }
+        .word-list {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+        }
+        .word-item {
+            padding: 5px 10px;
+            background: #f0f2f5;
+            border-radius: 15px;
+            font-size: 13px;
+            border: 1px solid #e1e4e8;
+        }
+
+        /* --- TOMBOL --- */
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+            transition: transform 0.1s;
+        }
+        button:active { transform: scale(0.98); }
+        .btn-gen { background-color: #3498db; }
+        .btn-print { background-color: #2c3e50; margin-top: 20px;}
+        .btn-key { background-color: #e67e22; }
+
+        /* --- PRINT SETTINGS --- */
+        @page { size: A4; margin: 0; }
+
+        @media print {
+            body { background: white; padding: 1cm; width: 100%; box-sizing: border-box; }
+            .config-panel, .subtitle, h1, button { display: none !important; }
+            .student-header { display: block; }
+            .main-wrapper { display: block; width: 100%; }
+            .game-panel { box-shadow: none; padding: 0; width: 100%; }
+            
+            .game-panel::before {
+                content: "LEMBAR KERJA WORD SEARCH";
+                font-family: sans-serif; font-size: 18pt; font-weight: bold;
+                margin-bottom: 10px; display: block; text-align: center;
+            }
+
+            /* Saat Print, pastikan cell background putih */
+            .cell { 
+                border: 1px solid #333; 
+                background-color: white !important; 
+                color: black !important;
+                font-size: 13pt;
+                width: 28px; height: 28px;
+                -webkit-print-color-adjust: exact;
+            }
+            
+            /* Cell kosong harus benar-benar hilang */
+            .cell.mask-empty {
+                border: none !important;
+                background: transparent !important;
+            }
+
+            #grid-container { grid-template-columns: repeat(15, 28px) !important; }
+
+            .word-list { justify-content: flex-start; gap: 10px; }
+            .word-item { background: white; border: 1px solid #999; }
+
+            /* KUNCI JAWABAN */
+            body.print-key .game-panel::before { content: "KUNCI JAWABAN"; color: red; }
+            body.print-key .cell.found {
+                background-color: #bbb !important;
+                font-weight: 900;
+                border: 1px solid black;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Word Search Generator v4</h1>
+    <p class="subtitle">Buat puzzle dengan berbagai bentuk menarik!</p>
+
+    <div class="main-wrapper">
+        <div class="config-panel">
+            
+            <div class="config-section">
+                <label>1. Kata (Maks 14 Huruf)</label>
+                <textarea id="input-words">BUNGA
+MATAHARI
+MAWAR
+MELATI
+ANGGREK
+TULIP
+DAUN
+AKAR
+BATANG
+TAMAN</textarea>
+            </div>
+
+            <div class="config-section">
+                <label>2. Pilih Bentuk Grid</label>
+                <select id="shape-select" onchange="generatePuzzle()">
+                    <option value="square">Kotak (Full)</option>
+                    <option value="heart">Hati (Love)</option>
+                    <option value="star">Bintang</option>
+                    <option value="smiley">Smiley Face</option>
+                    <option value="tree">Pohon Cemara</option>
+                    <option value="donut">Donat / Lingkaran</option>
+                </select>
+            </div>
+
+            <div class="config-section">
+                <label>3. Arah Kata</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item"><input type="checkbox" id="dir-right" checked> Kanan</div>
+                    <div class="checkbox-item"><input type="checkbox" id="dir-down" checked> Bawah</div>
+                    <div class="checkbox-item"><input type="checkbox" id="dir-diag" checked> Diagonal</div>
+                    <div class="checkbox-item"><input type="checkbox" id="dir-multi"> Kiri/Atas/Mundur (Sulit)</div>
+                </div>
+            </div>
+
+            <button class="btn-gen" onclick="generatePuzzle()">🔄 Buat Puzzle Baru</button>
+            <hr>
+            <button class="btn-print" onclick="printPuzzle('soal')">🖨️ Print Soal</button>
+            <button class="btn-key" onclick="printPuzzle('kunci')">🔑 Print Jawaban</button>
+        </div>
+
+        <div class="game-panel">
+            <div class="student-header">
+                <div class="student-info-row">
+                    <span>Nama : ..........................................</span>
+                    <span>Nilai : ..........</span>
+                </div>
+                <div class="student-info-row">
+                    <span>Kelas : ..........................................</span>
+                </div>
+            </div>
+
+            <div id="grid-container"></div>
+            
+            <div class="word-list-container">
+                <h3 style="margin: 10px 0;">Cari Kata:</h3>
+                <ul id="word-list" class="word-list"></ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const gridSize = 15;
+        let grid = [];
+        let placedWords = [];
+        let currentMask = [];
+
+        // --- DEFINISI BENTUK (0 = Kosong, 1 = Isi) ---
+        // Grid 15x15
+        const shapes = {
+            square: Array(15).fill().map(() => Array(15).fill(1)),
+            
+            heart: [
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,1,1,1,0,0,0,1,1,1,0,0,0,0],
+                [0,1,1,1,1,1,0,1,1,1,1,1,0,0,0],
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,0,0],
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,0,0],
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,0,0],
+                [0,1,1,1,1,1,1,1,1,1,1,1,0,0,0],
+                [0,1,1,1,1,1,1,1,1,1,1,1,0,0,0],
+                [0,0,1,1,1,1,1,1,1,1,1,0,0,0,0],
+                [0,0,0,1,1,1,1,1,1,1,0,0,0,0,0],
+                [0,0,0,0,1,1,1,1,1,0,0,0,0,0,0],
+                [0,0,0,0,0,1,1,1,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,1,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+            ],
+
+            smiley: [
+                [0,0,0,0,0,1,1,1,1,1,0,0,0,0,0],
+                [0,0,0,1,1,1,1,1,1,1,1,1,0,0,0],
+                [0,0,1,1,1,1,1,1,1,1,1,1,1,0,0],
+                [0,1,1,1,0,0,1,1,1,0,0,1,1,1,0], // Mata (0)
+                [0,1,1,1,0,0,1,1,1,0,0,1,1,1,0], // Mata (0)
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [1,1,1,1,0,1,1,1,1,1,0,1,1,1,1], // Senyum ujung
+                [0,1,1,1,1,0,0,0,0,0,1,1,1,1,0], // Senyum tengah
+                [0,1,1,1,1,1,1,1,1,1,1,1,1,1,0],
+                [0,0,1,1,1,1,1,1,1,1,1,1,1,0,0],
+                [0,0,0,1,1,1,1,1,1,1,1,1,0,0,0],
+                [0,0,0,0,0,1,1,1,1,1,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+            ],
+
+            tree: [
+                [0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,1,1,1,0,0,0,0,0,0],
+                [0,0,0,0,0,1,1,1,1,1,0,0,0,0,0],
+                [0,0,0,0,1,1,1,1,1,1,1,0,0,0,0],
+                [0,0,0,0,0,0,1,1,1,0,0,0,0,0,0],
+                [0,0,0,0,0,1,1,1,1,1,0,0,0,0,0],
+                [0,0,0,0,1,1,1,1,1,1,1,0,0,0,0],
+                [0,0,0,1,1,1,1,1,1,1,1,1,0,0,0],
+                [0,0,0,0,0,1,1,1,1,1,0,0,0,0,0],
+                [0,0,0,0,1,1,1,1,1,1,1,0,0,0,0],
+                [0,0,0,1,1,1,1,1,1,1,1,1,0,0,0],
+                [0,0,1,1,1,1,1,1,1,1,1,1,1,0,0],
+                [0,0,0,0,0,0,1,1,1,0,0,0,0,0,0],
+                [0,0,0,0,0,0,1,1,1,0,0,0,0,0,0],
+                [0,0,0,0,0,0,1,1,1,0,0,0,0,0,0]
+            ],
+
+            star: [
+                [0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,1,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,1,1,1,0,0,0,0,0,0],
+                [0,0,0,0,0,1,1,1,1,1,0,0,0,0,0],
+                [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                [0,1,1,1,1,1,1,1,1,1,1,1,1,1,0],
+                [0,0,1,1,1,1,1,1,1,1,1,1,1,0,0],
+                [0,0,0,1,1,1,1,1,1,1,1,1,0,0,0],
+                [0,0,0,0,1,1,1,1,1,1,1,0,0,0,0],
+                [0,0,0,1,1,1,0,1,1,1,0,0,0,0,0],
+                [0,0,1,1,1,0,0,0,1,1,1,0,0,0,0],
+                [0,1,1,0,0,0,0,0,0,0,1,1,0,0,0],
+                [1,1,0,0,0,0,0,0,0,0,0,1,1,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+            ],
+            
+            donut: [
+                [0,0,0,0,1,1,1,1,1,1,1,0,0,0,0],
+                [0,0,1,1,1,1,1,1,1,1,1,1,1,0,0],
+                [0,1,1,1,1,1,1,1,1,1,1,1,1,1,0],
+                [0,1,1,1,1,1,1,1,1,1,1,1,1,1,0],
+                [1,1,1,1,0,0,0,0,0,0,0,1,1,1,1],
+                [1,1,1,1,0,0,0,0,0,0,0,1,1,1,1],
+                [1,1,1,1,0,0,0,0,0,0,0,1,1,1,1],
+                [1,1,1,1,0,0,0,0,0,0,0,1,1,1,1],
+                [1,1,1,1,0,0,0,0,0,0,0,1,1,1,1],
+                [0,1,1,1,1,1,1,1,1,1,1,1,1,1,0],
+                [0,1,1,1,1,1,1,1,1,1,1,1,1,1,0],
+                [0,0,1,1,1,1,1,1,1,1,1,1,1,0,0],
+                [0,0,0,0,1,1,1,1,1,1,1,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
+            ]
+        };
+
+        const directionsMap = {
+            'dir-right': {x: 1, y: 0}, 
+            'dir-down': {x: 0, y: 1}, 
+            'dir-diag': {x: 1, y: 1},
+            'dir-multi': [{x: -1, y: 0}, {x: 0, y: -1}, {x: 1, y: -1}, {x: -1, y: 1}] // Kiri, Atas, Diagonal Balik
+        };
+
+        function generatePuzzle() {
+            // 1. Ambil Mask/Bentuk
+            const shapeKey = document.getElementById('shape-select').value;
+            currentMask = shapes[shapeKey] || shapes.square;
+
+            // 2. Ambil Kata
+            const rawText = document.getElementById('input-words').value;
+            let words = rawText.split('\n')
+                .map(w => w.trim().toUpperCase().replace(/[^A-Z]/g, ''))
+                .filter(w => w.length > 0);
+
+            // Validasi
+            if(words.length === 0) return alert("Masukkan minimal 1 kata");
+            
+            // 3. Konfigurasi Arah
+            let allowedDirs = [];
+            if(document.getElementById('dir-right').checked) allowedDirs.push(directionsMap['dir-right']);
+            if(document.getElementById('dir-down').checked) allowedDirs.push(directionsMap['dir-down']);
+            if(document.getElementById('dir-diag').checked) allowedDirs.push(directionsMap['dir-diag']);
+            if(document.getElementById('dir-multi').checked) allowedDirs = allowedDirs.concat(directionsMap['dir-multi']);
+            
+            if(allowedDirs.length === 0) return alert("Pilih minimal 1 arah!");
+
+            // 4. Reset
+            const gridEl = document.getElementById('grid-container');
+            const listEl = document.getElementById('word-list');
+            gridEl.innerHTML = '';
+            listEl.innerHTML = '';
+            grid = Array(gridSize).fill(null).map(() => Array(gridSize).fill(''));
+            placedWords = [];
+
+            // 5. Place Words
+            words.sort((a, b) => b.length - a.length); // Kata panjang dulu
+            let failedWords = [];
+
+            words.forEach(word => {
+                let placed = false;
+                let attempts = 0;
+                while(!placed && attempts < 150) {
+                    const dir = allowedDirs[Math.floor(Math.random() * allowedDirs.length)];
+                    const startX = Math.floor(Math.random() * gridSize);
+                    const startY = Math.floor(Math.random() * gridSize);
+
+                    if(canPlace(word, startX, startY, dir)) {
+                        for(let i=0; i<word.length; i++) {
+                            grid[startY + i*dir.y][startX + i*dir.x] = word[i];
+                        }
+                        placedWords.push({
+                            word, start: {x: startX, y: startY}, end: {x: startX + (word.length-1)*dir.x, y: startY + (word.length-1)*dir.y}
+                        });
+                        placed = true;
+                    }
+                    attempts++;
+                }
+                if(!placed) failedWords.push(word);
+            });
+
+            // 6. Fill Random & Render
+            fillRandomLetters();
+            renderGrid(gridEl);
+            
+            // Tampilkan hanya kata yang berhasil masuk
+            const successWords = words.filter(w => !failedWords.includes(w));
+            renderWordList(listEl, successWords);
+
+            if(failedWords.length > 0) {
+                // Opsional: Beritahu user jika ada kata yang tidak muat
+                console.warn("Kata tidak muat:", failedWords);
+            }
+        }
+
+        function canPlace(word, startX, startY, dir) {
+            for(let i=0; i<word.length; i++) {
+                const x = startX + i * dir.x;
+                const y = startY + i * dir.y;
+
+                // Cek batas grid
+                if(x < 0 || x >= gridSize || y < 0 || y >= gridSize) return false;
+                
+                // Cek MASK (Bentuk) -> Jika mask 0, tidak boleh ditempati
+                if(currentMask[y][x] === 0) return false;
+
+                // Cek tabrakan huruf
+                if(grid[y][x] !== '' && grid[y][x] !== word[i]) return false;
+            }
+            return true;
+        }
+
+        function fillRandomLetters() {
+            const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+            for(let y=0; y<gridSize; y++) {
+                for(let x=0; x<gridSize; x++) {
+                    // Hanya isi jika grid kosong DAN mask mengizinkan (bernilai 1)
+                    if(grid[y][x] === '' && currentMask[y][x] === 1) {
+                        grid[y][x] = letters.charAt(Math.floor(Math.random() * letters.length));
+                    }
+                }
+            }
+        }
+
+        function renderGrid(container) {
+            for(let y=0; y<gridSize; y++) {
+                for(let x=0; x<gridSize; x++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    
+                    // Jika mask 0, ini adalah area kosong (transparan)
+                    if(currentMask[y][x] === 0) {
+                        cell.classList.add('mask-empty');
+                    } else {
+                        cell.innerText = grid[y][x];
+                        
+                        // Cek Jawaban (untuk print key)
+                        placedWords.forEach(pw => {
+                            if(isPointOnLine({x,y}, pw.start, pw.end, pw.word.length)) {
+                                cell.classList.add('found');
+                            }
+                        });
+                    }
+                    container.appendChild(cell);
+                }
+            }
+        }
+
+        function isPointOnLine(pt, start, end, len) {
+            const dx = (end.x - start.x) / (len - 1);
+            const dy = (end.y - start.y) / (len - 1);
+            if(isNaN(dx) || isNaN(dy)) return false;
+            for(let i=0; i<len; i++) {
+                if(Math.round(start.x + i*dx) === pt.x && Math.round(start.y + i*dy) === pt.y) return true;
+            }
+            return false;
+        }
+
+        function renderWordList(container, words) {
+            words.forEach(w => {
+                const li = document.createElement('li');
+                li.className = 'word-item';
+                li.innerText = w;
+                container.appendChild(li);
+            });
+        }
+
+        function printPuzzle(type) {
+            if(type === 'kunci') document.body.classList.add('print-key');
+            else document.body.classList.remove('print-key');
+            window.print();
+            setTimeout(() => document.body.classList.remove('print-key'), 1000);
+        }
+
+        // Init
+        window.onload = generatePuzzle;
+    </script>
+</body>
+</html>

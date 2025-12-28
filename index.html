@@ -1,138 +1,416 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src https://cdnjs.cloudflare.com https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://script.google.com;">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
     <title>Edunexus PRO - Solusi AI Pendidikan</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-font-smoothing: antialiased; letter-spacing: -0.01em; }
-        .soft-shadow { box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05); }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            letter-spacing: -0.01em;
+        }
+
+        .soft-shadow {
+            box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05);
+        }
+
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+
+            100% {
+                transform: translateY(0px);
+            }
+        }
+
+        /* Tab Transition */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .tab-content.active {
+            display: grid;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .glass-card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.05);
+        }
     </style>
 </head>
-<body class="bg-[#fcfcfd] text-slate-900">
-    <nav class="fixed w-full z-50 bg-white/70 backdrop-blur-xl border-b border-slate-100 px-8 h-16 flex justify-between items-center">
-        <span class="text-xl font-extrabold text-blue-600 tracking-tighter">EDUNEXUS<span class="text-purple-600">PRO</span></span>
-        <a href="login.html" class="bg-slate-900 text-white px-5 py-2 rounded-xl text-xs font-bold hover:bg-blue-600 transition-all duration-300">Member Area</a>
+
+<body class="bg-slate-50 relative text-slate-900 overflow-x-hidden selection:bg-blue-500/30">
+
+    <!-- Background Gradient -->
+    <div class="fixed inset-0 z-0 pointer-events-none">
+        <div
+            class="absolute top-[0%] left-[-10%] w-[50%] h-[50%] bg-blue-400/20 rounded-full blur-[120px] animate-pulse">
+        </div>
+        <div class="absolute top-[40%] right-[-10%] w-[40%] h-[40%] bg-purple-400/20 rounded-full blur-[120px] animate-pulse"
+            style="animation-delay: 2s;"></div>
+        <div class="absolute bottom-[-10%] left-[20%] w-[50%] h-[40%] bg-cyan-400/10 rounded-full blur-[100px] animate-pulse"
+            style="animation-delay: 4s;"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav
+        class="fixed w-full z-50 bg-white/70 backdrop-blur-xl border-b border-white/50 px-8 h-20 flex justify-between items-center transition-all duration-300">
+        <div class="flex items-center gap-2">
+            <span class="text-2xl font-[900] text-slate-900 tracking-tighter italic"><span
+                    class="text-blue-600">EDU</span>NEXUS<span class="text-slate-400">PRO</span></span>
+        </div>
+        <a href="login.html"
+            class="flex items-center gap-2 bg-slate-900 text-white px-6 py-3 rounded-2xl text-[10px] uppercase font-bold tracking-widest hover:bg-blue-600 hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 group">
+            Member Area <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+        </a>
     </nav>
 
-    <header class="pt-40 pb-12 px-6 text-center max-w-4xl mx-auto">
-        <h1 class="text-4xl md:text-6xl font-[800] mb-6 leading-[1.1] text-slate-900 tracking-tight">Smart AI for <span class="text-blue-600">Modern Education.</span></h1>
-        <p class="text-md text-slate-500 mb-10 max-w-xl mx-auto font-medium leading-relaxed">Satu ekosistem cerdas untuk Guru Profesional di sekolah dan Orang Tua Hebat di rumah.</p>
-        <div class="flex justify-center">
-            <a href="#harga" class="px-8 py-4 bg-blue-600 text-white rounded-2xl font-bold text-sm soft-shadow hover:scale-105 transition-all duration-500">LIHAT PAKET HARGA</a>
+    <!-- Hero Section -->
+    <header class="relative pt-48 pb-12 px-6 text-center max-w-5xl mx-auto z-10">
+        <div
+            class="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 px-4 py-2 rounded-full mb-8 animate-in fade-in slide-in-from-bottom-4 duration-700">
+            <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+            <span class="text-[10px] font-bold text-blue-600 uppercase tracking-widest">Platform AI Pendidikan
+                Terintegrasi</span>
+        </div>
+
+        <h1
+            class="text-5xl md:text-7xl font-[900] mb-8 leading-[1.05] text-slate-900 tracking-tight animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-100">
+            Smart AI for <br><span
+                class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 bg-300% animate-gradient">Modern
+                Education.</span>
+        </h1>
+
+        <p
+            class="text-lg text-slate-500 mb-12 max-w-2xl mx-auto font-medium leading-relaxed animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200">
+            Satu ekosistem cerdas untuk Guru Profesional di sekolah dan Orang Tua Hebat di rumah.
+        </p>
+
+        <!-- Audience Segmentation Tabs -->
+        <div class="mt-12 mb-8 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-300">
+            <div class="inline-flex bg-slate-100/80 p-1.5 rounded-full border border-slate-200/50 backdrop-blur-md">
+                <button onclick="switchTab('guru')" id="tab-guru"
+                    class="px-8 py-3 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 bg-white shadow-lg text-blue-600">
+                    <i class="fas fa-chalkboard-teacher mr-2"></i> Guru
+                </button>
+                <button onclick="switchTab('orangtua')" id="tab-orangtua"
+                    class="px-8 py-3 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 text-slate-500 hover:text-slate-800">
+                    <i class="fas fa-user-friends mr-2"></i> Orangtua
+                </button>
+                <button onclick="switchTab('siswa')" id="tab-siswa"
+                    class="px-8 py-3 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 text-slate-500 hover:text-slate-800">
+                    <i class="fas fa-user-graduate mr-2"></i> Siswa
+                </button>
+            </div>
         </div>
     </header>
 
-    <section class="py-16 px-6 max-w-6xl mx-auto grid md:grid-cols-3 gap-8">
-        <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 soft-shadow flex flex-col items-center text-center">
-            <div class="w-24 h-24 mb-6 flex items-center justify-center">
-                <img src="edulessonpro.png" alt="eduLessonPRO Logo" class="w-full h-full object-contain">
-            </div>
-            <h3 class="text-lg font-extrabold mb-4 tracking-tight">eduLessonPRO</h3>
-            <p class="text-sm text-slate-500 leading-relaxed font-medium">
-                Penyusunan <b>modul dan RPP</b> otomatis berbasis <b>Kurikulum Merdeka</b> & <b>Deep Learning</b>.
-            </p>
-        </div>
+    <!-- Features Section based on Tabs -->
+    <section id="fitur" class="relative pb-24 px-6 max-w-7xl mx-auto z-10 min-h-[500px]">
 
-        <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 soft-shadow flex flex-col items-center text-center">
-            <div class="w-24 h-24 mb-6 flex items-center justify-center">
-                <img src="eduexampro.png" alt="eduExamPRO Logo" class="w-full h-full object-contain">
-            </div>
-            <h3 class="text-lg font-extrabold mb-4 tracking-tight">eduExamPRO</h3>
-            <p class="text-sm text-slate-500 leading-relaxed font-medium">
-                Pembuatan ujian sekolah presisi dengan pendekatan <b>Taxonomy Bloom</b> dan distribusi kesulitan soal.
-            </p>
-        </div>
-
-        <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 soft-shadow relative overflow-hidden flex flex-col items-center text-center">
-            <div class="absolute top-0 right-0 bg-orange-500 text-white px-4 py-1 text-[8px] font-bold uppercase tracking-widest rounded-bl-xl shadow-sm">Under Development</div>
-            <div class="w-24 h-24 mb-6 flex items-center justify-center">
-                <img src="eduteachpro.png" alt="eduTeachPRO Logo" class="w-full h-full object-contain grayscale opacity-70">
-            </div>
-            <h3 class="text-lg font-extrabold mb-4 tracking-tight">eduTeachPRO</h3>
-            <p class="text-sm text-slate-500 leading-relaxed font-medium">
-                Membantu <b>Orang Tua</b> menyederhanakan materi belajar agar mudah dijelaskan kepada anak di rumah.
-            </p>
-        </div>
-    </section>
-
-    <section class="py-20 px-6 bg-white border-y border-slate-50">
-        <div class="max-w-6xl mx-auto">
-            <div class="grid md:grid-cols-2 gap-16 items-center">
-                <div>
-                    <h2 class="text-xs font-bold text-blue-600 uppercase tracking-[0.3em] mb-4">Tentang eduPRO</h2>
-                    <h3 class="text-3xl font-extrabold text-slate-900 mb-6 tracking-tight leading-tight">
-                        Education Projects by <br><span class="text-blue-600">EDUNEXUS INDONESIA</span>
-                    </h3>
-                    <p class="text-slate-500 leading-relaxed font-medium mb-6">
-                        <b>eduPRO</b> adalah ekosistem inovasi digital dari EDUNEXUS INDONESIA yang menjembatani kebutuhan akademis sekolah dengan pendampingan belajar di rumah melalui teknologi AI terbaik.
-                    </p>
-                    <div class="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                        <i class="fas fa-rocket text-blue-500 text-xl"></i>
-                        <p class="text-xs font-bold text-slate-700 leading-tight">Mewujudkan visi pendidikan modern yang efisien dan berdampak nyata.</p>
-                    </div>
+        <!-- GURU CONTENT -->
+        <div id="content-guru" class="tab-content active grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- EduLessonPRO -->
+            <div class="glass-card p-8 rounded-[2rem] hover:bg-white transition-all duration-500 group">
+                <div
+                    class="w-16 h-16 mb-6 bg-blue-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+                    <img src="edulessonpro.png" alt="eduLessonPRO" class="w-10 h-10 object-contain"
+                        onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\'fas fa-book-open text-blue-500 text-2xl\'></i>'">
                 </div>
-
-                <div class="grid gap-6">
-                    <h2 class="text-xs font-bold text-slate-400 uppercase tracking-[0.3em]">Keuntungan Memakai eduPRO</h2>
-                    <div class="space-y-4">
-                        <div class="flex gap-4 items-start">
-                            <div class="w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-[10px] mt-1 shrink-0"><i class="fas fa-check"></i></div>
-                            <div>
-                                <h4 class="font-bold text-sm text-slate-900">Efisiensi Waktu</h4>
-                                <p class="text-xs text-slate-500 font-medium">Otomasi administratif guru hingga 80% lebih cepat.</p>
-                            </div>
-                        </div>
-                        <div class="flex gap-4 items-start">
-                            <div class="w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-[10px] mt-1 shrink-0"><i class="fas fa-check"></i></div>
-                            <div>
-                                <h4 class="font-bold text-sm text-slate-900">Akurasi Pedagogis</h4>
-                                <p class="text-xs text-slate-500 font-medium">Menggunakan standar Kurikulum Merdeka dan Taxonomy Bloom.</p>
-                            </div>
-                        </div>
-                        <div class="flex gap-4 items-start">
-                            <div class="w-6 h-6 rounded-full bg-green-100 text-green-600 flex items-center justify-center text-[10px] mt-1 shrink-0"><i class="fas fa-check"></i></div>
-                            <div>
-                                <h4 class="font-bold text-sm text-slate-900">Kolaborasi Orang Tua</h4>
-                                <p class="text-xs text-slate-500 font-medium">Memudahkan orang tua mendampingi materi pelajaran di rumah.</p>
-                            </div>
-                        </div>
-                    </div>
+                <h3 class="text-lg font-[800] mb-3 text-slate-800">eduLessonPRO</h3>
+                <p class="text-xs text-slate-500 leading-relaxed font-medium">
+                    Generator Modul Ajar & RPP otomatis berbasis Kurikulum Merdeka & Deep Learning.
+                </p>
+                <div class="mt-6 pt-6 border-t border-slate-100">
+                    <a href="edulessonpro.html"
+                        class="text-[10px] font-bold uppercase tracking-widest text-blue-600 hover:text-blue-800 flex items-center gap-2">
+                        Akses Aplikasi <i class="fas fa-arrow-right"></i>
+                    </a>
                 </div>
             </div>
+
+            <!-- EduExamPRO -->
+            <div class="glass-card p-8 rounded-[2rem] hover:bg-white transition-all duration-500 group">
+                <div
+                    class="w-16 h-16 mb-6 bg-purple-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+                    <img src="eduexampro.png" alt="eduExamPRO" class="w-10 h-10 object-contain"
+                        onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\'fas fa-file-signature text-purple-500 text-2xl\'></i>'">
+                </div>
+                <h3 class="text-lg font-[800] mb-3 text-slate-800">eduExamPRO</h3>
+                <p class="text-xs text-slate-500 leading-relaxed font-medium">
+                    Pembuatan ujian sekolah presisi dengan pendekatan Taxonomy Bloom.
+                </p>
+                <div class="mt-6 pt-6 border-t border-slate-100">
+                    <a href="eduexampro.html"
+                        class="text-[10px] font-bold uppercase tracking-widest text-blue-600 hover:text-blue-800 flex items-center gap-2">
+                        Akses Aplikasi <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- EduReportPRO (Coming Soon) -->
+            <div
+                class="glass-card p-8 rounded-[2rem] hover:bg-white transition-all duration-500 opacity-80 relative overflow-hidden group">
+                <div
+                    class="absolute top-0 right-0 bg-slate-900 text-white px-3 py-1.5 text-[8px] font-bold uppercase tracking-widest rounded-bl-xl z-20">
+                    Coming Soon</div>
+                <div
+                    class="w-16 h-16 mb-6 bg-emerald-50 rounded-2xl flex items-center justify-center grayscale group-hover:grayscale-0 transition-all duration-500">
+                    <i class="fas fa-chart-pie text-emerald-500 text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-[800] mb-3 text-slate-800">eduReportPRO</h3>
+                <p class="text-xs text-slate-500 leading-relaxed font-medium">
+                    Analisis data nilai siswa dan pembuatan rapor otomatis yang komprehensif.
+                </p>
+            </div>
+
+            <!-- EduToolsPRO -->
+            <div class="glass-card p-8 rounded-[2rem] hover:bg-white transition-all duration-500 group">
+                <div
+                    class="w-16 h-16 mb-6 bg-orange-50 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+                    <i class="fas fa-tools text-orange-500 text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-[800] mb-3 text-slate-800">eduToolsPRO</h3>
+                <p class="text-xs text-slate-500 leading-relaxed font-medium">
+                    Kumpulan utilitas praktis untuk produktivitas guru sehari-hari.
+                </p>
+                <div class="mt-6 pt-6 border-t border-slate-100">
+                    <a href="#"
+                        class="text-[10px] font-bold uppercase tracking-widest text-slate-400 cursor-not-allowed flex items-center gap-2">
+                        Segera Hadir
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- ORANGTUA CONTENT -->
+        <div id="content-orangtua" class="tab-content hidden grid md:grid-cols-2 lg:grid-cols-3 gap-8 justify-center">
+            <!-- Intro Text -->
+            <div class="md:col-span-2 lg:col-span-3 text-center mb-8 max-w-2xl mx-auto">
+                <h3 class="text-2xl font-[900] text-slate-800 mb-4">Dampingi Buah Hati Lebih Baik</h3>
+                <p class="text-slate-500 font-medium">Teknologi kami membantu menjembatani pemahaman materi sekolah
+                    dengan bahasa yang mudah dimengerti orang tua.</p>
+            </div>
+
+            <!-- EduTeachPRO -->
+            <div
+                class="lg:col-start-2 glass-card p-10 rounded-[2.5rem] hover:bg-white transition-all duration-500 relative overflow-hidden group border-2 border-blue-100/50">
+                <div
+                    class="absolute top-0 right-0 bg-blue-600 text-white px-4 py-2 text-[9px] font-bold uppercase tracking-widest rounded-bl-2xl">
+                    Coming Soon</div>
+                <div
+                    class="w-20 h-20 mb-8 bg-indigo-50 rounded-[2rem] flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+                    <img src="eduteachpro.png" alt="eduTeachPRO" class="w-10 h-10 object-contain"
+                        onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\'fas fa-user-astronaut text-indigo-500 text-4xl\'></i>'">
+                </div>
+                <h3 class="text-2xl font-[800] mb-4 text-slate-800">eduTeachPRO</h3>
+                <p class="text-sm text-slate-500 leading-relaxed font-medium mb-6">
+                    Bantu orangtua untuk belajar materi belajar anak, memudahkan orangtua untuk mengerti pelajaran
+                    sehingga pendampingan di rumah lebih efektif.
+                </p>
+                <button disabled
+                    class="w-full py-4 bg-slate-100 text-slate-400 rounded-xl font-bold text-xs uppercase tracking-widest cursor-not-allowed">
+                    Dalam Pengembangan
+                </button>
+            </div>
+        </div>
+
+        <!-- SISWA CONTENT -->
+        <div id="content-siswa" class="tab-content hidden grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+            <div
+                class="glass-card p-10 rounded-[2.5rem] hover:bg-white transition-all duration-500 group border border-slate-100">
+                <div
+                    class="w-20 h-20 mb-8 bg-purple-50 rounded-[2rem] flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+                    <i class="fas fa-laptop-code text-purple-500 text-4xl"></i>
+                </div>
+                <h3 class="text-2xl font-[800] mb-4 text-slate-800">LMS & Ujian</h3>
+                <p class="text-sm text-slate-500 leading-relaxed font-medium mb-8">
+                    Akses materi pelajaran dan kerjakan ujian sekolahmu dengan mudah melalui platform terintegrasi.
+                </p>
+                <a href="login.html"
+                    class="inline-flex w-full justify-center items-center gap-2 bg-slate-900 text-white px-6 py-4 rounded-xl text-[10px] uppercase font-bold tracking-widest hover:bg-purple-600 hover:shadow-lg transition-all duration-300">
+                    Login Siswa <i class="fas fa-sign-in-alt"></i>
+                </a>
+            </div>
+
+            <div
+                class="glass-card p-10 rounded-[2.5rem] hover:bg-white transition-all duration-500 group border border-slate-100">
+                <div
+                    class="w-20 h-20 mb-8 bg-blue-50 rounded-[2rem] flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
+                    <i class="fas fa-trophy text-blue-500 text-4xl"></i>
+                </div>
+                <h3 class="text-2xl font-[800] mb-4 text-slate-800">Achievements</h3>
+                <p class="text-sm text-slate-500 leading-relaxed font-medium mb-8">
+                    Pantau progres belajar, nilai, dan pencapaianmu. Jadilah juara di kelasmu!
+                </p>
+                <button onclick="alert('Fitur ini akan segera hadir!')"
+                    class="w-full py-4 bg-white border border-slate-200 text-slate-600 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-slate-50 transition-all">
+                    Lihat Progres
+                </button>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- Pricing Section (Universal) -->
+    <section id="harga" class="relative py-24 px-6 max-w-5xl mx-auto z-10 border-t border-slate-200/50">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl font-[900] text-slate-900 tracking-tight mb-4">Pilihan Paket Langganan</h2>
+            <p class="text-slate-500">Investasi terbaik untuk efisiensi pendidikan Anda.</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8 items-center">
+            <!-- Silver -->
+            <div
+                class="bg-white/80 backdrop-blur-xl p-10 rounded-[2.5rem] border border-white/50 shadow-lg group hover:scale-[1.02] transition-all duration-500">
+                <h3 class="font-bold text-slate-400 uppercase tracking-[0.2em] text-[10px] mb-4">Paket Silver</h3>
+                <div class="flex items-baseline gap-1 mb-8">
+                    <span class="text-4xl font-[900] tracking-tighter text-slate-800">Rp 49.000</span>
+                    <span class="text-xs font-bold text-slate-400">/bulan</span>
+                </div>
+                <ul class="text-sm text-slate-500 space-y-4 mb-10 font-medium">
+                    <li class="flex items-center gap-3"><i class="fas fa-check-circle text-blue-500"></i> Pilih <b>1
+                            Aplikasi Saja</b></li>
+                    <li class="flex items-center gap-3"><i class="fas fa-check-circle text-blue-500"></i> Update Sistem
+                        Berkala</li>
+                    <li class="flex items-center gap-3"><i class="fas fa-check-circle text-blue-500"></i> Dukungan
+                        Standard</li>
+                </ul>
+                <a href="checkout.html?plan=silver"
+                    class="block text-center py-4 border-2 border-slate-100 rounded-2xl font-black text-slate-700 hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all duration-300 text-[10px] uppercase tracking-[0.2em]">
+                    Pilih Silver
+                </a>
+            </div>
+
+            <!-- Gold -->
+            <div
+                class="transform scale-105 bg-slate-900 text-white p-12 rounded-[2.5rem] shadow-2xl shadow-blue-900/20 relative overflow-hidden group hover:scale-[1.07] transition-all duration-500">
+                <div class="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity"><i
+                        class="fas fa-crown text-9xl"></i></div>
+                <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-purple-500"></div>
+
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="font-bold text-blue-400 uppercase tracking-[0.2em] text-[10px]">Paket Gold</h3>
+                    <span
+                        class="bg-blue-600 text-white text-[9px] font-bold px-3 py-1 rounded-lg uppercase tracking-widest">Best
+                        Value</span>
+                </div>
+
+                <div class="flex items-baseline gap-1 mb-2">
+                    <span class="text-5xl font-[900] tracking-tighter">Rp 150.000</span>
+                </div>
+                <p class="text-[10px] font-bold text-blue-400 mb-8 uppercase tracking-widest opacity-80">Satu kali bayar
+                    / PER TAHUN</p>
+
+                <ul class="text-sm text-slate-300 space-y-4 mb-10 font-medium relative z-10">
+                    <li class="flex items-center gap-3"><i class="fas fa-star text-yellow-400"></i> Akses <b>SEMUA</b>
+                        Aplikasi (Bundle)</li>
+                    <li class="flex items-center gap-3"><i class="fas fa-star text-yellow-400"></i> Termasuk eduTeachPRO
+                        (Early Access)</li>
+                    <li class="flex items-center gap-3"><i class="fas fa-bolt text-yellow-400"></i> <b>Prioritas Update
+                            Utama</b></li>
+                </ul>
+                <a href="checkout.html?plan=gold"
+                    class="block text-center py-5 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-2xl font-black hover:shadow-lg hover:shadow-blue-500/50 transition-all duration-300 text-[10px] uppercase tracking-[0.2em] relative z-20">
+                    Ambil Promo Tahunan
+                </a>
+            </div>
         </div>
     </section>
 
-    <section id="harga" class="py-24 px-6 max-w-5xl mx-auto grid md:grid-cols-2 gap-8">
-        <div class="bg-white p-10 rounded-[2.5rem] border border-slate-100 soft-shadow">
-            <h3 class="font-bold text-slate-400 uppercase tracking-[0.2em] text-[10px] mb-4">Paket Silver</h3>
-            <p class="text-4xl font-extrabold mb-8 tracking-tighter">Rp 50.000<span class="text-xs font-medium text-slate-400"> /bulan</span></p>
-            <ul class="text-sm text-slate-500 space-y-4 mb-10 font-medium">
-                <li><i class="fas fa-check-circle text-blue-500 mr-2"></i> Pilih <b>1 Aplikasi Saja</b></li>
-                <li><i class="fas fa-check-circle text-blue-500 mr-2"></i> Update Sistem Berkala</li>
-            </ul>
-            <a href="checkout.html?plan=silver" class="block text-center py-4 border border-slate-200 rounded-2xl font-bold hover:bg-slate-900 hover:text-white transition-all duration-500 text-xs uppercase tracking-widest">Pilih Silver</a>
-        </div>
-
-        <div class="bg-slate-900 p-10 rounded-[2.5rem] text-white soft-shadow relative overflow-hidden border-2 border-blue-500/20">
-            <div class="absolute top-0 right-0 p-8 opacity-10"><i class="fas fa-crown text-8xl"></i></div>
-            <h3 class="font-bold text-blue-400 uppercase tracking-[0.2em] text-[10px] mb-4">Paket Gold (Paling Hemat)</h3>
-            <p class="text-5xl font-extrabold mb-2 tracking-tighter">Rp 150.000</p>
-            <p class="text-xs font-bold text-blue-400 mb-8 uppercase tracking-widest italic">Satu kali bayar / PER TAHUN</p>
-            
-            <ul class="text-sm text-slate-300 space-y-4 mb-10 font-medium">
-                <li><i class="fas fa-star text-yellow-400 mr-2"></i> Akses <b>SEMUA</b> Aplikasi Sekaligus</li>
-                <li><i class="fas fa-star text-yellow-400 mr-2"></i> Termasuk eduTeachPRO (Saat Rilis)</li>
-                <li><i class="fas fa-bolt text-yellow-400 mr-2"></i> <b>Prioritas Update Utama</b></li>
-            </ul>
-            <a href="checkout.html?plan=gold" class="block text-center py-4 bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 transition-all duration-500 text-xs uppercase tracking-widest">AMBIL PROMO TAHUNAN</a>
-        </div>
-    </section>
-
-    <footer class="py-20 text-center text-slate-400 text-[11px] font-bold uppercase tracking-widest">
-        <p>&copy; 2025 Edunexus Indonesia. Developed by PapaUnicorn.</p>
+    <footer class="py-12 text-center border-t border-slate-200/50 bg-white/50 backdrop-blur-sm relative z-10">
+        <p class="text-[10px] font-bold uppercase tracking-[0.25em] text-slate-400">&copy; 2025 Edunexus Indonesia.
+            Developed by PapaUnicorn.</p>
     </footer>
+
+    <style>
+        .bg-300\% {
+            background-size: 300%;
+        }
+
+        @keyframes gradient {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        .animate-gradient {
+            animation: gradient 6s ease infinite;
+        }
+    </style>
+
+    <script>
+        function switchTab(role) {
+            // Update Buttons
+            const buttons = document.querySelectorAll('button[id^="tab-"]');
+            buttons.forEach(btn => {
+                if (btn.id === `tab-${role}`) {
+                    // Active State
+                    btn.classList.remove('text-slate-500', 'hover:text-slate-800');
+                    btn.classList.add('bg-white', 'shadow-lg', 'text-blue-600');
+                } else {
+                    // Inactive State
+                    btn.classList.remove('bg-white', 'shadow-lg', 'text-blue-600');
+                    btn.classList.add('text-slate-500', 'hover:text-slate-800');
+                }
+            });
+
+            // Update Content
+            const contents = document.querySelectorAll('.tab-content');
+            contents.forEach(content => {
+                content.classList.remove('active');
+                content.classList.add('hidden');
+            });
+
+            const activeContent = document.getElementById(`content-${role}`);
+            activeContent.classList.remove('hidden');
+            // Small delay to allow display:block to apply before opacity transition if needed, 
+            // but CSS animation handles it via keyframes mostly.
+            setTimeout(() => activeContent.classList.add('active'), 10);
+        }
+    </script>
 </body>
+
 </html>
