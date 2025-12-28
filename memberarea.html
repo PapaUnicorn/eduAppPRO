@@ -56,13 +56,7 @@
 <body class="bg-slate-50 relative h-screen overflow-hidden text-slate-900 selection:bg-blue-500/30">
 
     <!-- Auth Guard -->
-    <script>
-        const storedEmail = localStorage.getItem('edunexus_email');
-        const storedWA = localStorage.getItem('edunexus_wa');
-        if (!storedEmail || !storedWA) {
-            window.location.href = 'login.html';
-        }
-    </script>
+    <!-- Auth Guard Removed for Free Access -->
 
     <div class="flex h-full">
         <!-- Sidebar -->
@@ -193,27 +187,14 @@
 
         // Init
         async function init() {
-            try {
-                const user = await EduAPI.getProfile();
-                if (user && user.status === 'found') {
-                    renderSidebar(user);
-                } else {
-                    // Force logout if invalid
-                    window.location.href = 'login.html';
-                }
-            } catch (e) {
-                console.error("Critical Init Error", e);
-                // Show Error UI in sidebar
-                document.getElementById('user-skeleton').innerHTML = `
-                    <div class="text-center py-4">
-                        <div class="text-[10px] text-red-500 font-bold mb-2">Gagal Memuat Profil</div>
-                        <button onclick="location.reload()" class="px-4 py-2 bg-slate-900 text-white text-[10px] font-bold rounded-lg uppercase tracking-wider hover:bg-slate-700">
-                            Coba Lagi
-                        </button>
-                    </div>
-                `;
-                if (window.showToast) window.showToast("Koneksi bermasalah. Silakan refresh.", "error");
-            }
+            // DIRECT ACCESS - NO API CHECK
+            const user = {
+                name: 'Guest Member',
+                email: 'welcome@edunexus.pro',
+                plan: 'Gold', // Grants all access
+                app: 'All Access'
+            };
+            renderSidebar(user);
         }
 
         function renderSidebar(user) {
@@ -253,18 +234,13 @@
             // Render Apps
             const appsMap = {
                 "eduLessonPRO": { name: "eduLessonPRO", link: "edulessonpro.html", icon: "fa-book-open" },
-                "eduExamPRO": { name: "eduExamPRO", link: "eduexampro.html", icon: "fa-file-signature" }
+                "eduExamPRO": { name: "eduExamPRO", link: "eduexampro.html", icon: "fa-file-signature" },
+                "TTS": { name: "EduGame: TTS", link: "tts.html", icon: "fa-puzzle-piece" },
+                "WordSearch": { name: "EduGame: Word Search", link: "wordsearch.html", icon: "fa-search" }
             };
 
-            let allowedApps = [];
-            if (safeUser.plan.toLowerCase() === 'gold') {
-                allowedApps = Object.keys(appsMap);
-            } else if (appsMap[safeUser.app]) {
-                allowedApps = [safeUser.app];
-            } else {
-                // Fallback if app not recognized
-                allowedApps = ["eduLessonPRO"];
-            }
+            // ALWAYS GIVE FULL ACCESS
+            let allowedApps = Object.keys(appsMap);
 
             const appContainer = document.getElementById('app-list');
             appContainer.innerHTML = '';
@@ -284,9 +260,6 @@
                 appContainer.appendChild(btn);
             });
         }
-
-        // ... existing loadApp ...
-
 
         function loadApp(name, url, icon, btnElement) {
             // Reset Active
@@ -319,13 +292,15 @@
         }
 
         function switchRole(role) {
-            if (confirm(`Switch to ${role}? (Requires Re-login)`)) {
-                logout();
+            // Just refresh or show toast, roles don't matter as much in free mode unless specified.
+            // But user asked to keep it simple. We'll leave it as a reload for now.
+            if (confirm(`Switch view to ${role}?`)) {
+                location.reload();
             }
         }
 
         function logout() {
-            localStorage.clear();
+            // Redirect to home
             window.location.href = 'index.html';
         }
 
