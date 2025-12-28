@@ -1,51 +1,188 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src https://cdnjs.cloudflare.com https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://script.google.com;">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
     <title>Member Area - Edunexus PRO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-font-smoothing: antialiased; letter-spacing: -0.01em; }
-        .soft-shadow { box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05); }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            letter-spacing: -0.01em;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.05);
+        }
+
+        .glass-input {
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(226, 232, 240, 0.6);
+            transition: all 0.3s ease;
+        }
+
+        .glass-input:focus {
+            background: #ffffff;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
     </style>
 </head>
-<body class="bg-[#fcfcfd] flex items-center justify-center min-h-screen p-6">
-    <div id="lBox" class="bg-white p-12 rounded-[2.5rem] soft-shadow border border-slate-100 w-full max-w-[420px] text-center">
-        <h2 class="text-xl font-[800] text-slate-900 mb-2 uppercase tracking-tight">Member Access</h2>
-        <p class="text-slate-400 text-[10px] font-bold uppercase tracking-[0.2em] mb-10">Sign in to your account</p>
-        <div class="space-y-4">
-            <input type="email" id="em" placeholder="Email Terdaftar" class="w-full p-4 bg-slate-50 border-0 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500/20 transition-all text-sm font-medium">
-            <input type="tel" id="wa" placeholder="WhatsApp (08...)" class="w-full p-4 bg-slate-50 border-0 rounded-2xl outline-none focus:ring-2 focus:ring-blue-500/20 transition-all text-sm font-medium">
-            <button onclick="login()" id="btnL" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-bold text-xs uppercase tracking-widest shadow-lg shadow-slate-100 hover:bg-blue-600 transition-all duration-500 mt-4">MASUK SEKARANG</button>
+
+<body class="bg-slate-50 relative min-h-screen text-slate-900 overflow-x-hidden selection:bg-blue-500/30">
+
+    <!-- Background Gradient Animation -->
+    <div class="fixed inset-0 z-0 pointer-events-none">
+        <div
+            class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-400/20 rounded-full blur-[120px] animate-pulse">
+        </div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-purple-400/20 rounded-full blur-[120px] animate-pulse"
+            style="animation-delay: 2s;"></div>
+    </div>
+
+    <!-- Auth Guard with Session Expiry -->
+    <script>
+        const storedEmail = localStorage.getItem('edunexus_email');
+        const storedWA = localStorage.getItem('edunexus_wa');
+        const loginTime = localStorage.getItem('edunexus_login_time');
+        const EXPIRY_MS = 24 * 60 * 60 * 1000; // 24 Hours
+
+        if (storedEmail && storedWA && loginTime) {
+            const now = Date.now();
+            if (now - parseInt(loginTime) > EXPIRY_MS) {
+                localStorage.clear();
+            } else {
+                // Auto-redirect if session is valid
+                window.location.href = 'memberarea.html';
+            }
+        }
+    </script>
+
+    <div class="relative z-10 flex items-center justify-center min-h-screen p-6">
+
+        <!-- Login Box -->
+        <div id="lBox"
+            class="glass-panel p-10 md:p-12 rounded-[2.5rem] w-full max-w-[420px] text-center transform transition-all duration-700 hover:scale-[1.01]">
+            <div class="mb-8 flex justify-center">
+                <div
+                    class="w-16 h-16 bg-gradient-to-tr from-blue-600 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30 text-white text-2xl">
+                    <i class="fas fa-fingerprint"></i>
+                </div>
+            </div>
+            <h2 class="text-2xl font-[900] text-slate-900 mb-2 tracking-tight">Member Access</h2>
+            <p class="text-slate-400 text-[10px] font-bold uppercase tracking-[0.25em] mb-10">Sign in to your account
+            </p>
+
+            <div class="space-y-4">
+                <div class="group relative">
+                    <div
+                        class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <input type="email" id="em" placeholder="Email Terdaftar"
+                        class="w-full pl-11 pr-4 py-4 rounded-xl text-sm font-bold glass-input text-slate-700 placeholder:font-medium placeholder:text-slate-400 outline-none">
+                </div>
+
+                <div class="group relative">
+                    <div
+                        class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
+                        <i class="fab fa-whatsapp text-lg"></i>
+                    </div>
+                    <input type="tel" id="wa" placeholder="WhatsApp (08...)"
+                        class="w-full pl-11 pr-4 py-4 rounded-xl text-sm font-bold glass-input text-slate-700 placeholder:font-medium placeholder:text-slate-400 outline-none">
+                </div>
+
+                <button onclick="login()" id="btnL"
+                    class="w-full bg-slate-900 text-white py-4 rounded-xl font-[900] text-xs uppercase tracking-[0.15em] shadow-xl shadow-slate-900/20 hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:shadow-blue-500/30 hover:-translate-y-1 transition-all duration-500 mt-6 relative overflow-hidden group">
+                    <span class="relative z-10">Masuk Sekarang</span>
+                    <div
+                        class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500">
+                    </div>
+                </button>
+            </div>
+
+            <p class="mt-8 text-[10px] text-slate-400 font-medium">Belum punya akun? <a href="index.html#harga"
+                    class="text-blue-600 font-bold hover:underline">Daftar di sini</a></p>
         </div>
     </div>
 
-    <div id="dash" class="hidden w-full max-w-4xl">
-        <div class="bg-white p-12 rounded-[3rem] soft-shadow border border-slate-100">
-            <div class="flex flex-col md:flex-row justify-between items-center mb-12 gap-6">
-                <div class="text-center md:text-left">
-                    <h2 class="text-2xl font-[800] text-slate-900 tracking-tight italic leading-none">Selamat Datang kembali!</h2>
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-[0.2em] mt-3">Akses aplikasi anda di sini</p>
-                </div>
-                <button onclick="logout()" class="text-slate-400 hover:text-red-500 w-10 h-10 rounded-xl hover:bg-red-50 transition-all duration-300"><i class="fas fa-power-off"></i></button>
-            </div>
-            <div id="pnd" class="hidden p-10 bg-slate-50 text-slate-500 rounded-[2rem] border border-dashed border-slate-200 text-center">
-                <i class="fas fa-clock text-2xl mb-4 animate-pulse"></i>
-                <h4 class="font-bold text-sm uppercase tracking-widest mb-1">Status: Menunggu Verifikasi</h4>
-                <p class="text-[11px] font-medium opacity-70">Aktivasi diproses dalam 1x24 jam.</p>
-            </div>
-            <div id="act" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
-        </div>
-    </div>
+    <!-- Toast UI -->
+    <div id="toast" class="toast"></div>
+    <style>
+        .toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 12px;
+            padding: 16px;
+            position: fixed;
+            z-index: 100;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transition: opacity 0.3s, bottom 0.3s;
+        }
+
+        .toast.show {
+            visibility: visible;
+            opacity: 1;
+            bottom: 50px;
+        }
+
+        .toast.success {
+            background-color: #10B981;
+        }
+
+        .toast.error {
+            background-color: #EF4444;
+        }
+    </style>
 
     <script>
+        function showToast(message, type = 'default') {
+            const x = document.getElementById("toast");
+            if (x) {
+                x.innerText = message;
+                x.className = "toast show " + type;
+                setTimeout(function () { x.className = x.className.replace("show", ""); }, 3000);
+            }
+        }
+
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwZ4yAU4aXx3vSMLUzJTYCJ1ufHBlqu3ZnHhj6heCYcJsBMA5aHGCIXIgZKdlFcGLmCmw/exec";
         function fixWA(wa) {
             let c = wa.replace(/\D/g, '');
-            if(c.startsWith('62')) return '0' + c.slice(2);
-            if(c.startsWith('8')) return '0' + c;
+            if (c.startsWith('62')) return '0' + c.slice(2);
+            if (c.startsWith('8')) return '0' + c;
             return c;
         }
 
@@ -54,36 +191,41 @@
             const waRaw = document.getElementById('wa').value;
             const cleanWA = fixWA(waRaw);
             const btn = document.getElementById('btnL');
-            if(!email || !cleanWA) return;
-            btn.innerText = "MENGECEK..."; btn.disabled = true;
+
+            if (!email || !cleanWA) {
+                showToast("Mohon lengkapi data.", "error");
+                return;
+            }
+
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin mr-2"></i> MENGECEK...';
+            btn.disabled = true;
 
             try {
                 const res = await (await fetch(`${SCRIPT_URL}?email=${email}&wa=${cleanWA}`)).json();
-                if(res.status === 'found') {
-                    localStorage.setItem('edunexus_email', email); localStorage.setItem('edunexus_wa', cleanWA);
-                    document.getElementById('lBox').classList.add('hidden'); document.getElementById('dash').classList.remove('hidden');
-                    if(res.userStatus === 'Pending') { document.getElementById('pnd').classList.remove('hidden'); }
-                    else {
-                        document.getElementById('act').classList.remove('hidden');
-                        const appsMap = { 
-                            "eduLessonPRO": { name: "eduLessonPRO", link: "edulessonpro.html", icon: "fa-book-open", desc: "Modul Ajar AI" },
-                            "eduExamPRO": { name: "eduExamPRO", link: "eduexampro.html", icon: "fa-file-signature", desc: "Asesmen Engine" }
-                        };
-                        const list = res.plan === 'gold' ? ['eduLessonPRO', 'eduExamPRO'] : [res.app];
-                        list.forEach(a => {
-                            const app = appsMap[a];
-                            document.getElementById('act').innerHTML += `
-                                <a href="${app.link}" class="group p-8 border border-slate-100 rounded-[2.5rem] bg-slate-50/50 hover:bg-white hover:soft-shadow transition-all duration-500 text-center">
-                                    <i class="fas ${app.icon} text-2xl mb-4 text-blue-600 group-hover:scale-110 transition-all"></i>
-                                    <p class="font-extrabold text-slate-800 text-sm tracking-tight">${app.name}</p>
-                                    <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest mt-1">${app.desc}</p>
-                                </a>`;
-                        });
-                    }
-                } else { alert("Data tidak ditemukan."); btn.innerText = "MASUK SEKARANG"; btn.disabled = false; }
-            } catch (e) { alert("Error sistem."); btn.innerText = "MASUK SEKARANG"; btn.disabled = false; }
+
+                if (res.status === 'found') {
+                    // Success: Store & Redirect
+                    localStorage.setItem('edunexus_email', email);
+                    localStorage.setItem('edunexus_wa', cleanWA);
+                    localStorage.setItem('edunexus_login_time', Date.now());
+
+                    showToast("Login Berhasil!", "success");
+                    setTimeout(() => {
+                        window.location.href = 'memberarea.html';
+                    }, 1000);
+                } else {
+                    showToast("Data tidak ditemukan. Periksa kembali email/WA Anda.", "error");
+                    btn.innerHTML = '<span class="relative z-10">Masuk Sekarang</span>';
+                    btn.disabled = false;
+                }
+            } catch (e) {
+                console.error(e);
+                showToast("Gagal terhubung ke server.", "error");
+                btn.innerHTML = '<span class="relative z-10">Masuk Sekarang</span>';
+                btn.disabled = false;
+            }
         }
-        function logout() { localStorage.clear(); location.reload(); }
     </script>
 </body>
+
 </html>

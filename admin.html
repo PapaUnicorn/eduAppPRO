@@ -1,64 +1,308 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
-    <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Edunexus PRO</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src https://cdnjs.cloudflare.com https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://script.google.com;">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0f172a">
+    <title>Admin Portal | Edunexus PRO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-font-smoothing: antialiased; letter-spacing: -0.01em; }
-        .soft-shadow { box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.05); }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            letter-spacing: -0.01em;
+        }
+
+        /* Glass Theme Utilities */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(100, 116, 139, 0.2);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(100, 116, 139, 0.4);
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.05);
+        }
+
+        .glass-input {
+            background: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(226, 232, 240, 0.6);
+            transition: all 0.3s ease;
+        }
+
+        .glass-input:focus {
+            background: #ffffff;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+        }
+
+        .spin-slow {
+            animation: spin 3s linear infinite;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .status-badge {
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-size: 0.65rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.6rem;
+        }
     </style>
 </head>
-<body class="bg-[#fcfcfd] p-8 md:p-12">
-    <div id="auth" class="max-w-sm mx-auto bg-white p-12 rounded-[2.5rem] soft-shadow border border-slate-100 text-center">
-        <h2 class="text-lg font-[800] mb-8 uppercase tracking-tight">Admin Access</h2>
-        <input type="password" id="pass" placeholder="Password Admin" class="w-full p-4 bg-slate-50 border-0 rounded-2xl mb-6 text-center outline-none focus:ring-2 focus:ring-blue-500/10 font-bold text-sm">
-        <button onclick="auth()" class="w-full bg-slate-900 text-white font-bold py-4 rounded-2xl text-[10px] uppercase tracking-widest hover:bg-blue-600 transition-all duration-500">MASUK</button>
+
+<body class="bg-slate-50 min-h-screen relative overflow-x-hidden p-8 md:p-12 selection:bg-blue-500/30">
+
+    <!-- Background Decoration -->
+    <div class="fixed inset-0 z-0 pointer-events-none">
+        <div
+            class="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-400/10 rounded-full blur-[100px] animate-pulse">
+        </div>
+        <div class="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-400/10 rounded-full blur-[100px] animate-pulse"
+            style="animation-delay: 2s;"></div>
     </div>
 
-    <div id="cont" class="hidden max-w-5xl mx-auto">
-        <div class="flex flex-col md:flex-row justify-between items-center mb-12 gap-6">
-            <h1 class="text-2xl font-[800] text-slate-800 tracking-tight italic leading-none">Kelola Aktivasi User</h1>
-            <button onclick="fetchU()" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest shadow-lg shadow-blue-50 transition-all">Refresh Data</button>
+    <div class="relative z-10 max-w-6xl mx-auto">
+        <!-- Auth View -->
+        <div id="auth"
+            class="max-w-[400px] mx-auto mt-20 glass-panel p-10 rounded-[2.5rem] text-center animate-in fade-in slide-in-from-bottom-8 duration-700">
+            <div
+                class="w-16 h-16 bg-slate-900 text-white rounded-2xl flex items-center justify-center mx-auto mb-6 text-2xl shadow-xl shadow-slate-900/20">
+                <i class="fas fa-shield-alt"></i>
+            </div>
+            <h2 class="text-2xl font-[900] mb-2 uppercase tracking-tight text-slate-800">Admin Portal</h2>
+            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.25em] mb-10">Restricted Access Only</p>
+
+            <div class="group relative mb-6">
+                <div
+                    class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-blue-500 transition-colors">
+                    <i class="fas fa-key"></i>
+                </div>
+                <input type="password" id="pass" placeholder="Enter Security Key"
+                    class="w-full pl-11 pr-4 py-4 rounded-xl glass-input outline-none font-bold text-sm text-center tracking-widest text-slate-700">
+            </div>
+
+            <button onclick="auth()"
+                class="w-full bg-slate-900 text-white font-[900] py-4 rounded-xl text-[10px] uppercase tracking-widest hover:bg-blue-600 hover:shadow-lg hover:shadow-blue-500/30 hover:-translate-y-1 transition-all duration-300">
+                Verifikasi Akses
+            </button>
         </div>
-        <div class="bg-white rounded-[2.5rem] soft-shadow border border-slate-100 overflow-hidden">
-            <table class="w-full text-left">
-                <thead class="bg-slate-50 border-b border-slate-100 text-[9px] font-[800] uppercase text-slate-400 tracking-[0.2em]">
-                    <tr><th class="p-8">Nama / WhatsApp</th><th class="p-8 text-center">Bukti Bayar</th><th class="p-8">Status</th><th class="p-8 text-right">Aksi</th></tr>
-                </thead>
-                <tbody id="tbl" class="text-xs font-medium text-slate-600"></tbody>
-            </table>
+
+        <!-- Dashboard View -->
+        <div id="cont" class="hidden">
+            <div
+                class="flex flex-col md:flex-row justify-between items-center mb-8 gap-6 glass-panel p-6 rounded-[2rem]">
+                <div>
+                    <h1 class="text-2xl font-[900] text-slate-800 tracking-tight italic leading-none">Management <span
+                            class="text-blue-600">Console</span></h1>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-2">User Validations &
+                        Controls</p>
+                </div>
+                <div class="flex gap-3">
+                    <button onclick="window.location.href='index.html'"
+                        class="group flex items-center gap-2 bg-white border border-slate-200 text-slate-500 px-5 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-slate-50 transition-all">
+                        <i class="fas fa-arrow-left"></i> Home
+                    </button>
+                    <button onclick="fetchU()"
+                        class="group flex items-center gap-2 bg-slate-900 text-white px-5 py-3 rounded-xl font-bold text-[10px] uppercase tracking-widest hover:bg-blue-600 hover:shadow-lg hover:shadow-blue-500/20 transition-all">
+                        <i class="fas fa-sync-alt group-hover:spin-slow"></i> Refresh
+                    </button>
+                </div>
+            </div>
+
+            <div class="glass-panel rounded-[2.5rem] overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead
+                            class="bg-slate-50/50 border-b border-slate-100 text-[9px] font-[900] uppercase text-slate-400 tracking-[0.2em] leading-relaxed">
+                            <tr>
+                                <th class="p-8">User Details</th>
+                                <th class="p-8 text-center">Payment Proof</th>
+                                <th class="p-8 text-center">Current Status</th>
+                                <th class="p-8 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbl" class="text-xs font-medium text-slate-600 divide-y divide-slate-50"></tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
+
+    <!-- Toast UI -->
+    <div id="toast" class="toast"></div>
+    <style>
+        .toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 12px;
+            padding: 16px;
+            position: fixed;
+            z-index: 100;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transition: opacity 0.3s, bottom 0.3s;
+        }
+
+        .toast.show {
+            visibility: visible;
+            opacity: 1;
+            bottom: 50px;
+        }
+
+        .toast.success {
+            background-color: #10B981;
+        }
+
+        .toast.error {
+            background-color: #EF4444;
+        }
+    </style>
 
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwZ4yAU4aXx3vSMLUzJTYCJ1ufHBlqu3ZnHhj6heCYcJsBMA5aHGCIXIgZKdlFcGLmCmw/exec";
-        const ADMIN_PASS = "Be1414nk"; // Password Anda
-        function auth() {
-            if(document.getElementById('pass').value === ADMIN_PASS) { document.getElementById('auth').classList.add('hidden'); document.getElementById('cont').classList.remove('hidden'); fetchU(); } else { alert("Akses Ditolak!"); }
+
+        function showToast(message, type = 'default') {
+            const x = document.getElementById("toast");
+            if (x) {
+                x.innerText = message;
+                x.className = "toast show " + type;
+                setTimeout(function () { x.className = x.className.replace("show", ""); }, 3000);
+            }
         }
-        async function fetchU() {
-            const tbl = document.getElementById('tbl'); tbl.innerHTML = `<tr><td colspan="4" class="p-16 text-center text-slate-300 font-bold tracking-widest animate-pulse">MEMUAT DATA...</td></tr>`;
+
+        async function auth() {
+            const input = document.getElementById('pass').value;
+            const btn = document.querySelector('button[onclick="auth()"]');
+
+            if (!input) { showToast("Masukkan kunci keamanan", "error"); return; }
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Verifying...';
+
             try {
-                const res = await (await fetch(`${SCRIPT_URL}?action=getUsers`)).json(); tbl.innerHTML = "";
+                // Server-side validation
+                const res = await (await fetch(`${SCRIPT_URL}?action=adminAuth&key=${encodeURIComponent(input)}`)).json();
+
+                if (res.status === 'success') {
+                    showToast("Access Granted", "success");
+                    document.getElementById('auth').classList.add('hidden');
+                    document.getElementById('cont').classList.remove('hidden');
+                    fetchU();
+                } else {
+                    showToast("Akses Ditolak: Kunci Salah", "error");
+                    document.getElementById('pass').value = '';
+                    document.getElementById('pass').focus();
+                }
+            } catch (e) {
+                console.error(e);
+                showToast("Gagal terhubung ke server", "error");
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "Verifikasi Akses";
+            }
+        }
+
+        async function fetchU() {
+            const tbl = document.getElementById('tbl');
+            tbl.innerHTML = `<tr><td colspan="4" class="p-16 text-center text-slate-300 font-bold tracking-widest animate-pulse"><i class="fas fa-circle-notch fa-spin mr-2"></i> MENGAMBIL DATA...</td></tr>`;
+            try {
+                const res = await (await fetch(`${SCRIPT_URL}?action=getUsers`)).json();
+                tbl.innerHTML = "";
+                if (res.length === 0) {
+                    tbl.innerHTML = `<tr><td colspan="4" class="p-16 text-center text-slate-400 font-bold tracking-widest">TIDAK ADA DATA USER</td></tr>`;
+                    return;
+                }
                 res.forEach(u => {
-                    const btn = u.status === "Pending" ? `<button onclick="act('${u.email}', '${u.wa}')" class="bg-blue-600 text-white px-4 py-2 rounded-xl font-bold text-[9px] uppercase tracking-widest">AKTIFKAN</button>` : `<span class="text-green-500 font-bold text-[9px] uppercase tracking-widest">AKTIF</span>`;
+                    const btn = u.status === "Pending" ?
+                        `<button onclick="act('${u.email}', '${u.wa}')" class="bg-blue-600 text-white px-5 py-2 rounded-xl font-[900] text-[9px] uppercase tracking-widest hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/30 transition-all transform hover:-translate-y-0.5">AKTIFKAN</button>` :
+                        `<span class="text-green-500 font-[900] text-[9px] uppercase tracking-widest flex items-center justify-end gap-2 opacity-50"><i class="fas fa-check-circle"></i> DONE</span>`;
+
+                    const statusBadge = u.status === 'Active' ?
+                        '<span class="status-badge bg-green-50 text-green-600 border border-green-100">ACTIVE</span>' :
+                        '<span class="status-badge bg-orange-50 text-orange-500 border border-orange-100">PENDING</span>';
+
                     tbl.innerHTML += `
-                        <tr class="border-b border-slate-50 hover:bg-slate-50 transition-all duration-300">
-                            <td class="p-8"><p class="font-bold text-slate-800">${u.name}</p><p class="text-[10px] text-slate-300 mt-1">${u.wa}</p></td>
-                            <td class="p-8 text-center"><a href="${u.proof}" target="_blank" class="bg-slate-100 text-blue-600 px-3 py-1 rounded-lg text-[9px] font-bold uppercase tracking-widest">Bukti</a></td>
-                            <td class="p-8"><span class="px-3 py-1 rounded-full text-[9px] font-bold uppercase tracking-widest ${u.status === 'Active' ? 'bg-green-50 text-green-600' : 'bg-orange-50 text-orange-600'}">${u.status}</span></td>
+                        <tr class="hover:bg-blue-50/50 transition-colors duration-300 group">
+                            <td class="p-8">
+                                <div class="flex items-center gap-5">
+                                    <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 font-bold text-xs group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300 shadow-sm">
+                                        ${u.name.charAt(0)}
+                                    </div>
+                                    <div>
+                                        <p class="font-[800] text-slate-800 text-sm tracking-tight">${u.name}</p>
+                                        <div class="flex items-center gap-3 mt-1.5">
+                                            <p class="text-[10px] text-slate-400 font-medium bg-slate-50 px-2 py-0.5 rounded-md border border-slate-100"><i class="fab fa-whatsapp mr-1"></i> ${u.wa}</p>
+                                        </div>
+                                        <p class="text-[10px] text-slate-400 mt-1 font-medium pl-1">${u.email}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="p-8 text-center">
+                                <a href="${u.proof}" target="_blank" class="inline-flex items-center gap-2 bg-white border border-slate-200 text-slate-600 px-4 py-2 rounded-xl text-[9px] font-[800] uppercase tracking-widest hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all transform hover:scale-105 shadow-sm">
+                                    <i class="fas fa-image"></i> Bukti
+                                </a>
+                            </td>
+                            <td class="p-8 text-center">${statusBadge}</td>
                             <td class="p-8 text-right">${btn}</td>
                         </tr>`;
                 });
-            } catch (e) { alert("Error."); }
+            } catch (e) {
+                console.error(e);
+                tbl.innerHTML = `<tr><td colspan="4" class="p-16 text-center text-red-500 font-bold tracking-widest bg-red-50/50">GAGAL MEMUAT DATA SERVER</td></tr>`;
+            }
         }
+
         async function act(email, wa) {
-            if(!confirm("Aktifkan akun?")) return;
-            try { await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "updateStatus", email: email, wa: wa }) }); alert("Berhasil!"); fetchU(); } catch (e) { alert("Gagal."); }
+            if (!confirm("Konfirmasi: Aktifkan akun member ini?")) return;
+            try {
+                await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "updateStatus", email: email, wa: wa }) });
+                showToast("Akun Berhasil Diaktifkan!", "success");
+                fetchU();
+            } catch (e) {
+                showToast("Gagal mengupdate status.", "error");
+            }
         }
     </script>
 </body>
+
 </html>
