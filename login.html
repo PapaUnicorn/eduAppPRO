@@ -11,6 +11,7 @@
     <title>Member Area - Edunexus PRO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="js/api.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
@@ -169,16 +170,7 @@
     </style>
 
     <script>
-        function showToast(message, type = 'default') {
-            const x = document.getElementById("toast");
-            if (x) {
-                x.innerText = message;
-                x.className = "toast show " + type;
-                setTimeout(function () { x.className = x.className.replace("show", ""); }, 3000);
-            }
-        }
-
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwZ4yAU4aXx3vSMLUzJTYCJ1ufHBlqu3ZnHhj6heCYcJsBMA5aHGCIXIgZKdlFcGLmCmw/exec";
+        // SCRIPT_URL and showToast handled by js/api.js
         function fixWA(wa) {
             let c = wa.replace(/\D/g, '');
             if (c.startsWith('62')) return '0' + c.slice(2);
@@ -201,18 +193,7 @@
             btn.disabled = true;
 
             try {
-                let res;
-                try {
-                    res = await (await fetch(`${SCRIPT_URL}?email=${email}&wa=${cleanWA}`)).json();
-                } catch (networkError) {
-                    console.warn("Network/CORS Error:", networkError);
-                    // Fallback for Demo/Testing if server is unreachable (e.g. from file://)
-                    if (email === 'demouser@edunexus.id' && cleanWA === '081818181818') {
-                        res = { status: 'found' };
-                    } else {
-                        throw networkError;
-                    }
-                }
+                const res = await EduAPI.login(email, cleanWA);
 
                 if (res.status === 'found') {
                     // Success: Store & Redirect
@@ -231,7 +212,7 @@
                 }
             } catch (e) {
                 console.error(e);
-                showToast("Gagal terhubung ke server.", "error");
+                showToast("Gagal terhubung ke server. Cek koneksi Anda.", "error");
                 btn.innerHTML = '<span class="relative z-10">Masuk Sekarang</span>';
                 btn.disabled = false;
             }

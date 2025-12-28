@@ -4,29 +4,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; font-src https://cdnjs.cloudflare.com https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://script.google.com;">
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0f172a">
     <title>Checkout - Edunexus PRO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="js/api.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             -webkit-font-smoothing: antialiased;
-            letter-spacing: -0.01em;
-        }
-
-        ::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: rgba(100, 116, 139, 0.2);
-            border-radius: 10px;
         }
 
         .glass-panel {
@@ -36,20 +23,8 @@
             box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.05);
         }
 
-        .glass-input {
-            background: rgba(255, 255, 255, 0.5);
-            border: 1px solid rgba(226, 232, 240, 0.6);
-            transition: all 0.3s ease;
-        }
-
-        .glass-input:focus {
-            background: #ffffff;
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
-        }
-
         .modal {
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             opacity: 0;
             pointer-events: none;
             transform: scale(0.95);
@@ -60,326 +35,150 @@
             pointer-events: auto;
             transform: scale(1);
         }
-
-        body.modal-active {
-            overflow: hidden;
-        }
-
-        /* Toast Styles */
-        .toast {
-            visibility: hidden;
-            min-width: 250px;
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(10px);
-            color: #fff;
-            text-align: center;
-            border-radius: 16px;
-            padding: 16px;
-            position: fixed;
-            z-index: 100;
-            left: 50%;
-            bottom: 30px;
-            transform: translateX(-50%);
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 0.05em;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            opacity: 0;
-            transition: opacity 0.3s, bottom 0.3s;
-        }
-
-        .toast.show {
-            visibility: visible;
-            opacity: 1;
-            bottom: 50px;
-        }
-
-        .toast.success {
-            border-color: #10B981;
-            color: #10B981;
-        }
-
-        .toast.error {
-            border-color: #EF4444;
-            color: #EF4444;
-        }
     </style>
 </head>
 
-<body
-    class="bg-slate-50 relative min-h-screen relative text-slate-900 overflow-x-hidden selection:bg-blue-500/30 p-6 md:p-12">
+<body class="bg-slate-50 min-h-screen text-slate-900 overflow-x-hidden selection:bg-blue-500/30 p-6 md:p-12 pb-20">
 
-    <!-- Background Gradient Animation -->
-    <div class="fixed inset-0 z-0 pointer-events-none">
-        <div
-            class="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-blue-400/20 rounded-full blur-[120px] animate-pulse">
-        </div>
-        <div class="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-purple-400/20 rounded-full blur-[120px] animate-pulse"
-            style="animation-delay: 2s;"></div>
-    </div>
+    <!-- Back Button -->
+    <a href="index.html"
+        class="inline-flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-blue-600 transition-colors mb-8">
+        <i class="fas fa-arrow-left"></i> Kembali ke Beranda
+    </a>
 
-    <!-- Main Container -->
-    <div class="relative z-10 max-w-4xl mx-auto flex flex-col lg:flex-row gap-8 pt-10">
-
-        <!-- Left: Form -->
+    <div class="max-w-4xl mx-auto flex flex-col lg:flex-row gap-8">
+        <!-- Form -->
         <div class="flex-1 space-y-6">
-            <div class="glass-panel p-10 rounded-[2.5rem] animate-in slide-in-from-bottom-4 duration-700">
+            <div class="glass-panel p-10 rounded-[2.5rem]">
                 <div class="flex items-center gap-4 mb-8">
                     <span
                         class="w-8 h-8 bg-blue-600 text-white rounded-xl flex items-center justify-center text-[10px] font-[900] shadow-lg shadow-blue-500/30">1</span>
                     <h2 class="font-[900] text-sm uppercase tracking-widest text-slate-500">Data Penerima</h2>
                 </div>
-
                 <div class="space-y-4">
-                    <div class="group relative">
-                        <div
-                            class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                            <i class="fas fa-user"></i>
-                        </div>
-                        <input type="text" id="userName" oninput="validate()" placeholder="Nama Lengkap"
-                            class="w-full pl-11 pr-4 py-4 rounded-2xl text-sm font-bold glass-input text-slate-700 outline-none">
-                    </div>
-                    <div class="group relative">
-                        <div
-                            class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                            <i class="fab fa-whatsapp text-lg"></i>
-                        </div>
-                        <input type="tel" id="userWA" oninput="validate()" placeholder="WhatsApp (08...)"
-                            class="w-full pl-11 pr-4 py-4 rounded-2xl text-sm font-bold glass-input text-slate-700 outline-none">
-                    </div>
-                    <div class="group relative">
-                        <div
-                            class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
-                            <i class="fas fa-envelope"></i>
-                        </div>
-                        <input type="email" id="userEmail" oninput="validate()" placeholder="Email Aktif"
-                            class="w-full pl-11 pr-4 py-4 rounded-2xl text-sm font-bold glass-input text-slate-700 outline-none">
-                    </div>
+                    <input type="text" id="userName" oninput="validate()" placeholder="Nama Lengkap"
+                        class="w-full p-4 rounded-2xl text-sm font-bold bg-white/50 border border-slate-200 outline-none focus:border-blue-500 transition-colors">
+                    <input type="tel" id="userWA" oninput="validate()" placeholder="WhatsApp (08...)"
+                        class="w-full p-4 rounded-2xl text-sm font-bold bg-white/50 border border-slate-200 outline-none focus:border-blue-500 transition-colors">
+                    <input type="email" id="userEmail" oninput="validate()" placeholder="Email Aktif"
+                        class="w-full p-4 rounded-2xl text-sm font-bold bg-white/50 border border-slate-200 outline-none focus:border-blue-500 transition-colors">
                 </div>
             </div>
 
-            <div id="appSel"
-                class="glass-panel p-10 rounded-[2.5rem] hidden animate-in slide-in-from-bottom-4 duration-700 delay-100">
+            <div id="appSel" class="glass-panel p-10 rounded-[2.5rem] hidden">
                 <div class="flex items-center gap-4 mb-8">
                     <span
-                        class="w-8 h-8 bg-slate-900 text-white rounded-xl flex items-center justify-center text-[10px] font-[900] shadow-lg">2</span>
+                        class="w-8 h-8 bg-slate-900 text-white rounded-xl flex items-center justify-center text-[10px] font-[900]">2</span>
                     <h2 class="font-[900] text-sm uppercase tracking-widest text-slate-500">Pilih Aplikasi</h2>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <label class="cursor-pointer group">
                         <input type="radio" name="opt" value="eduLessonPRO" class="hidden peer" onchange="validate()">
                         <div
-                            class="p-6 border border-slate-200 rounded-2xl peer-checked:border-blue-500 peer-checked:bg-blue-50/50 peer-checked:shadow-lg peer-checked:shadow-blue-500/10 hover:bg-white/50 transition-all duration-300 text-center">
+                            class="p-6 border border-slate-200 rounded-2xl peer-checked:border-blue-500 peer-checked:bg-blue-50 text-center hover:bg-white transition-all">
                             <i
-                                class="fas fa-book-open text-2xl text-slate-300 peer-checked:text-blue-500 mb-3 block transition-colors"></i>
-                            <span
-                                class="font-bold text-xs text-slate-700 peer-checked:text-blue-600">eduLessonPRO</span>
+                                class="fas fa-book-open text-2xl text-slate-300 peer-checked:text-blue-500 mb-2 block"></i>
+                            <span class="font-bold text-xs text-slate-700">eduLessonPRO</span>
                         </div>
                     </label>
                     <label class="cursor-pointer group">
                         <input type="radio" name="opt" value="eduExamPRO" class="hidden peer" onchange="validate()">
                         <div
-                            class="p-6 border border-slate-200 rounded-2xl peer-checked:border-purple-500 peer-checked:bg-purple-50/50 peer-checked:shadow-lg peer-checked:shadow-purple-500/10 hover:bg-white/50 transition-all duration-300 text-center">
+                            class="p-6 border border-slate-200 rounded-2xl peer-checked:border-purple-500 peer-checked:bg-purple-50 text-center hover:bg-white transition-all">
                             <i
-                                class="fas fa-file-signature text-2xl text-slate-300 peer-checked:text-purple-500 mb-3 block transition-colors"></i>
-                            <span
-                                class="font-bold text-xs text-slate-700 peer-checked:text-purple-600">eduExamPRO</span>
+                                class="fas fa-file-signature text-2xl text-slate-300 peer-checked:text-purple-500 mb-2 block"></i>
+                            <span class="font-bold text-xs text-slate-700">eduExamPRO</span>
                         </div>
                     </label>
                 </div>
             </div>
         </div>
 
-        <!-- Right: Summary -->
+        <!-- Summary -->
         <div class="lg:w-80">
-            <div
-                class="glass-panel p-8 rounded-[2.5rem] sticky top-10 flex flex-col items-center text-center animate-in fade-in slide-in-from-right-8 duration-1000">
+            <div class="glass-panel p-8 rounded-[2.5rem] sticky top-10 flex flex-col items-center text-center">
                 <div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mb-6 text-slate-400">
                     <i class="fas fa-shopping-bag text-2xl"></i>
                 </div>
-                <h3 id="pName" class="font-bold text-slate-400 uppercase text-[9px] tracking-[0.3em] mb-2">Memuat...
-                </h3>
-                <p id="pPrice"
-                    class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 font-[900] text-3xl mb-8 tracking-tighter">
-                    ---</p>
-
+                <h3 id="pName" class="font-bold text-slate-400 uppercase text-[9px] tracking-[0.3em] mb-2">Checkout</h3>
+                <p id="pPrice" class="text-3xl font-[900] text-slate-800 mb-8 tracking-tighter">---</p>
                 <button id="btnPay" onclick="toggleModal()"
-                    class="w-full bg-slate-900 text-white py-4 rounded-2xl font-[900] uppercase text-[10px] tracking-widest shadow-xl shadow-slate-900/20 hidden hover:bg-blue-600 hover:shadow-blue-500/30 hover:-translate-y-1 transition-all duration-500">
-                    Bayar Sekarang
-                </button>
-
-                <p class="mt-6 text-[9px] text-slate-400 font-medium">Secure Payment by QRIS Indonesia</p>
+                    class="w-full bg-slate-900 text-white py-4 rounded-2xl font-[900] uppercase text-[10px] tracking-widest hidden hover:bg-blue-600 transition-all shadow-lg">Bayar
+                    Sekarang</button>
             </div>
         </div>
     </div>
 
-    <!-- Payment Modal -->
-    <div id="qModal" class="modal fixed inset-0 flex items-center justify-center z-50 px-6">
-        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onclick="toggleModal()"></div>
-        <div
-            class="bg-white/90 backdrop-blur-xl p-10 rounded-[3rem] z-50 w-full max-w-[420px] text-center shadow-2xl shadow-blue-900/20 border border-white/50 relative overflow-hidden">
-
-            <!-- Step 1: Scan -->
-            <div id="s1" class="relative z-10">
-                <div class="inline-flex items-center gap-2 mb-6 bg-blue-50 px-4 py-2 rounded-full">
-                    <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-                    <span class="text-[9px] font-bold text-blue-600 uppercase tracking-widest">Menunggu
-                        Pembayaran</span>
-                </div>
-
-                <div class="bg-white p-4 border border-slate-100 rounded-[2.5rem] inline-block mb-6 shadow-sm">
-                    <img src="qris.jpg" class="w-56 mx-auto rounded-2xl">
-                </div>
-
-                <div class="mb-8 p-4 bg-slate-50/50 rounded-2xl border border-slate-100/50">
-                    <img src="logoqris.png" class="h-5 mx-auto mb-3 opacity-60">
-                    <div class="flex justify-center gap-3 text-slate-300 text-lg">
-                        <i class="fas fa-wallet"></i> <i class="fas fa-mobile-alt"></i> <i
-                            class="fas fa-university"></i>
-                    </div>
-                </div>
-
+    <!-- Modal -->
+    <div id="qModal" class="modal fixed inset-0 z-50 flex items-center justify-center p-6">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="toggleModal()"></div>
+        <div class="bg-white p-8 rounded-[2.5rem] z-10 w-full max-w-sm relative text-center shadow-2xl">
+            <div id="s1">
+                <img src="qris.jpg" class="w-48 mx-auto rounded-xl mb-6 shadow-sm border border-slate-100">
+                <p class="text-xs font-bold text-slate-500 mb-4">Scan QRIS untuk membayar.</p>
                 <button onclick="toStep2()"
-                    class="w-full bg-blue-600 text-white py-4 rounded-2xl font-[900] text-[10px] uppercase tracking-widest shadow-lg shadow-blue-500/30 hover:bg-blue-700 transition-all">
-                    SAYA SUDAH BAYAR <i class="fas fa-arrow-right ml-2"></i>
-                </button>
+                    class="w-full bg-blue-600 text-white py-3 rounded-xl font-[900] text-[10px] uppercase tracking-widest">Sudah
+                    Bayar</button>
             </div>
 
-            <!-- Step 2: Upload -->
-            <div id="s2" class="hidden relative z-10">
-                <h3 class="font-[900] text-xl mb-2 tracking-tight text-slate-900">Konfirmasi</h3>
-                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-8">Upload Bukti Transfer</p>
-
-                <div
-                    class="border-2 border-dashed border-slate-200 hover:border-blue-400 group rounded-[2.5rem] p-10 bg-slate-50/50 mb-8 cursor-pointer relative transition-all">
-                    <input type="file" id="fIn" class="absolute inset-0 opacity-0 cursor-pointer z-20"
-                        onchange="updateF()">
-                    <div class="relative z-10 transition-transform group-hover:scale-110 duration-300">
-                        <i
-                            class="fas fa-cloud-upload-alt text-4xl text-slate-300 mb-3 group-hover:text-blue-500 transition-colors"></i>
-                        <p id="fL" class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Klik untuk
-                            Upload</p>
-                    </div>
-                </div>
-
-                <button id="bUp" onclick="upload()"
-                    class="w-full bg-slate-900 text-white py-4 rounded-2xl font-[900] text-[10px] uppercase tracking-widest disabled:opacity-50 disabled:cursor-not-allowed shadow-xl"
-                    disabled>
-                    KIRIM VERIFIKASI
-                </button>
-                <div id="st"
-                    class="hidden mt-4 flex justify-center items-center gap-2 text-blue-600 font-bold text-[10px] uppercase tracking-widest">
-                    <i class="fas fa-spinner fa-spin"></i> Mengirim Data...
-                </div>
-            </div>
-
-            <!-- Step 3: Success -->
-            <div id="s3" class="hidden py-8 relative z-10">
-                <div
-                    class="w-20 h-20 bg-green-100 text-green-500 rounded-full flex items-center justify-center text-3xl mx-auto mb-6 animate-in zoom-in duration-500">
-                    <i class="fas fa-check"></i>
-                </div>
-                <h3 class="text-2xl font-[900] mb-2 tracking-tight text-slate-900">Terima Kasih!</h3>
-                <p class="text-slate-400 text-xs font-medium leading-relaxed max-w-[250px] mx-auto mb-8">Data Anda teah
-                    diterima. Admin kami akan melakukan verifikasi & aktivasi akun dalam 1x24 jam.</p>
-                <button onclick="location.href='index.html'"
-                    class="text-slate-900 bg-slate-100 hover:bg-slate-200 px-8 py-3 rounded-xl font-[900] text-[10px] uppercase tracking-widest transition-all">
-                    <i class="fas fa-home mr-2"></i> Kembali ke Beranda
-                </button>
+            <div id="s2" class="hidden">
+                <h3 class="font-[900] text-lg mb-4">Upload Bukti</h3>
+                <input type="file" id="fIn"
+                    class="block w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 mb-6">
+                <button onclick="upload()"
+                    class="w-full bg-slate-900 text-white py-3 rounded-xl font-[900] text-[10px] uppercase tracking-widest">Kirim
+                    Konfirmasi</button>
             </div>
         </div>
     </div>
-
-    <!-- Toast UI -->
-    <div id="toast" class="toast"></div>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwZ4yAU4aXx3vSMLUzJTYCJ1ufHBlqu3ZnHhj6heCYcJsBMA5aHGCIXIgZKdlFcGLmCmw/exec";
-
-        function showToast(message, type = 'default') {
-            const x = document.getElementById("toast");
-            if (x) {
-                x.innerText = message;
-                x.className = "toast show " + type;
-                setTimeout(function () { x.className = x.className.replace("show", ""); }, 3000);
-            }
-        }
-
-        let p = new URLSearchParams(window.location.search).get('plan') || 'gold';
+        const p = new URLSearchParams(window.location.search).get('plan') || 'gold';
 
         window.onload = () => {
-            document.getElementById('pName').innerText = p === 'gold' ? 'Paket Gold (1 Tahun)' : 'Paket Silver (1 Bulan)';
-            document.getElementById('pPrice').innerText = p === 'gold' ? 'Rp 150.000' : 'Rp 49.000';
+            document.getElementById('pName').innerText = p === 'gold' ? 'Paket Gold' : 'Paket Silver';
+            document.getElementById('pPrice').innerText = p === 'gold' ? 'Rp 99.000' : 'Rp 49.000';
             if (p === 'silver') document.getElementById('appSel').classList.remove('hidden');
-            validate();
         };
-
-        function fixWA(wa) {
-            let c = wa.replace(/\D/g, ''); if (c.startsWith('62')) return '0' + c.slice(2); if (c.startsWith('8')) return '0' + c; return c;
-        }
 
         function validate() {
             const ok = document.getElementById('userName').value && document.getElementById('userWA').value && document.getElementById('userEmail').value && (p === 'gold' || document.querySelector('input[name="opt"]:checked'));
-            const btn = document.getElementById('btnPay');
-            if (ok) {
-                btn.style.display = 'block';
-                btn.classList.add('animate-in', 'zoom-in', 'duration-300');
-            } else {
-                btn.style.display = 'none';
-            }
+            document.getElementById('btnPay').style.display = ok ? 'block' : 'none';
         }
-
-        function toggleModal() {
-            document.body.classList.toggle('modal-active');
-        }
-
-        function toStep2() {
-            document.getElementById('s1').classList.add('hidden');
-            document.getElementById('s2').classList.remove('hidden');
-            document.getElementById('s2').classList.add('animate-in', 'fade-in', 'slide-in-from-right-8');
-        }
-
-        function updateF() {
-            const f = document.getElementById('fIn').files[0];
-            if (f) {
-                document.getElementById('fL').innerText = f.name;
-                document.getElementById('fL').classList.add('text-slate-800');
-                document.getElementById('bUp').disabled = false;
-                document.getElementById('bUp').classList.add('bg-blue-600', 'hover:bg-blue-700');
-                document.getElementById('bUp').classList.remove('bg-slate-900');
-            }
-        }
+        function toggleModal() { document.body.classList.toggle('modal-active'); }
+        function toStep2() { document.getElementById('s1').classList.add('hidden'); document.getElementById('s2').classList.remove('hidden'); }
 
         async function upload() {
-            const btn = document.getElementById('bUp');
-            const status = document.getElementById('st');
             const file = document.getElementById('fIn').files[0];
+            if (!file) return alert("Pilih file bukti transfer!");
 
-            if (!file) return;
-
-            btn.classList.add('hidden');
-            status.classList.remove('hidden');
-
+            // Converting file to base64 for GAS
             const reader = new FileReader();
+            reader.readAsDataURL(file);
             reader.onload = async () => {
-                const name = document.getElementById('userName').value;
-                const email = document.getElementById('userEmail').value;
-                const wa = fixWA(document.getElementById('userWA').value);
-                const app = p === 'gold' ? 'GOLD_ALL' : document.querySelector('input[name="opt"]:checked').value;
+                const base64 = reader.result.split(',')[1];
+                const payload = {
+                    data: base64,
+                    filename: file.name,
+                    mimeType: file.type,
+                    name: document.getElementById('userName').value,
+                    email: document.getElementById('userEmail').value,
+                    wa: document.getElementById('userWA').value.replace(/\D/g, ''),
+                    plan: p,
+                    app: p === 'gold' ? 'GOLD_ALL' : document.querySelector('input[name="opt"]:checked').value
+                };
 
                 try {
-                    await fetch(SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ data: reader.result.split(',')[1], filename: `${name}_${wa}_${new Date().getTime()}.${file.name.split('.').pop()}`, mimeType: file.type, name: name, email: email, wa: wa, plan: p, app: app }) });
-                    document.getElementById('s2').classList.add('hidden');
-                    document.getElementById('s3').classList.remove('hidden');
-                    showToast("Bukti pembayaran terkirim!", "success");
+                    await fetch("https://script.google.com/macros/s/AKfycbwZ4yAU4aXx3vSMLUzJTYCJ1ufHBlqu3ZnHhj6heCYcJsBMA5aHGCIXIgZKdlFcGLmCmw/exec", {
+                        method: 'POST', mode: 'no-cors',
+                        body: JSON.stringify(payload)
+                    });
+                    alert("Bukti terkirim! Admin akan memverifikasi dalam 24 jam.");
+                    window.location.href = 'index.html';
                 } catch (e) {
-                    showToast("Gagal mengirim data. Silakan coba lagi.", "error");
-                    btn.classList.remove('hidden');
-                    status.classList.add('hidden');
+                    alert("Gagal kirim. Coba lagi.");
                 }
             };
-            reader.readAsDataURL(file);
         }
     </script>
 </body>
