@@ -11,6 +11,7 @@
     <title>Admin Portal | Edunexus PRO</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="js/api.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
@@ -145,18 +146,104 @@
                 <div class="overflow-x-auto">
                     <table class="w-full text-left">
                         <thead
-                            class="bg-slate-50/50 border-b border-slate-100 text-[9px] font-[900] uppercase text-slate-400 tracking-[0.2em] leading-relaxed">
+                            class="bg-slate-50/50 border-b border-slate-100 text-[9px] font-[900] uppercase text-slate-400 tracking-[0.2em] leading-relaxed whitespace-nowrap">
                             <tr>
-                                <th class="p-8">User Details</th>
-                                <th class="p-8 text-center">Payment Proof</th>
-                                <th class="p-8 text-center">Current Status</th>
-                                <th class="p-8 text-right">Actions</th>
+                                <th class="p-6">Date</th>
+                                <th class="p-6">Username</th>
+                                <th class="p-6">Role</th>
+                                <th class="p-6">Full Name</th>
+                                <th class="p-6">Contact</th>
+                                <th class="p-6">Package</th>
+                                <th class="p-6">Status</th>
+                                <th class="p-6 text-center">Proof</th>
+                                <th class="p-6 text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody id="tbl" class="text-xs font-medium text-slate-600 divide-y divide-slate-50"></tbody>
+                        <tbody id="tbl" class="text-[11px] font-bold text-slate-600 divide-y divide-slate-50"></tbody>
                     </table>
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Edit Modal -->
+    <div id="editModal"
+        class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+        <div class="glass-panel w-full max-w-lg rounded-[2rem] p-8 relative animate-in zoom-in-95 duration-200">
+            <button onclick="closeModal()" class="absolute top-6 right-6 text-slate-400 hover:text-slate-800">
+                <i class="fas fa-times text-xl"></i>
+            </button>
+
+            <h3 class="text-xl font-[900] text-slate-800 mb-6">Edit User</h3>
+
+            <form id="editForm" class="space-y-4" onsubmit="saveUser(event)">
+                <input type="hidden" id="editUsername"> <!-- Key -->
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label
+                            class="block text-[9px] font-bold uppercase tracking-wider text-slate-400 mb-1">Role</label>
+                        <select id="editRole" class="w-full glass-input px-3 py-2 rounded-lg text-xs font-bold">
+                            <option value="Guru">Guru</option>
+                            <option value="Siswa">Siswa</option>
+                            <option value="Orang Tua">Orang Tua</option>
+                            <option value="Umum">Umum</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label
+                            class="block text-[9px] font-bold uppercase tracking-wider text-slate-400 mb-1">Status</label>
+                        <select id="editStatus" class="w-full glass-input px-3 py-2 rounded-lg text-xs font-bold">
+                            <option value="Pending">Pending</option>
+                            <option value="Active">Active</option>
+                            <option value="Suspended">Suspended</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-[9px] font-bold uppercase tracking-wider text-slate-400 mb-1">Nama
+                        Lengkap</label>
+                    <input type="text" id="editName" class="w-full glass-input px-3 py-2 rounded-lg text-xs font-bold">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label
+                            class="block text-[9px] font-bold uppercase tracking-wider text-slate-400 mb-1">Email</label>
+                        <input type="email" id="editEmail"
+                            class="w-full glass-input px-3 py-2 rounded-lg text-xs font-bold">
+                    </div>
+                    <div>
+                        <label
+                            class="block text-[9px] font-bold uppercase tracking-wider text-slate-400 mb-1">WhatsApp</label>
+                        <input type="text" id="editWa"
+                            class="w-full glass-input px-3 py-2 rounded-lg text-xs font-bold">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label
+                            class="block text-[9px] font-bold uppercase tracking-wider text-slate-400 mb-1">Package</label>
+                        <select id="editPackage" class="w-full glass-input px-3 py-2 rounded-lg text-xs font-bold">
+                            <option value="Gold">Gold</option>
+                            <option value="Silver">Silver</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label
+                            class="block text-[9px] font-bold uppercase tracking-wider text-slate-400 mb-1">Details</label>
+                        <input type="text" id="editDetails"
+                            class="w-full glass-input px-3 py-2 rounded-lg text-xs font-bold" placeholder="Utk Silver">
+                    </div>
+                </div>
+
+                <button type="submit" id="btnSave"
+                    class="w-full bg-slate-900 text-white py-3 rounded-xl font-[900] text-xs uppercase tracking-widest hover:bg-blue-600 transition-all mt-4">
+                    Simpan Perubahan
+                </button>
+            </form>
         </div>
     </div>
 
@@ -199,7 +286,7 @@
     </style>
 
     <script>
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwZ4yAU4aXx3vSMLUzJTYCJ1ufHBlqu3ZnHhj6heCYcJsBMA5aHGCIXIgZKdlFcGLmCmw/exec";
+        const SCRIPT_URL = API_CONFIG.BASE_URL;
 
         function showToast(message, type = 'default') {
             const x = document.getElementById("toast");
@@ -244,62 +331,109 @@
 
         async function fetchU() {
             const tbl = document.getElementById('tbl');
-            tbl.innerHTML = `<tr><td colspan="4" class="p-16 text-center text-slate-300 font-bold tracking-widest animate-pulse"><i class="fas fa-circle-notch fa-spin mr-2"></i> MENGAMBIL DATA...</td></tr>`;
+            tbl.innerHTML = `<tr><td colspan="8" class="p-16 text-center text-slate-300 font-bold tracking-widest animate-pulse"><i class="fas fa-circle-notch fa-spin mr-2"></i> MENGAMBIL DATA...</td></tr>`;
             try {
                 const res = await (await fetch(`${SCRIPT_URL}?action=getUsers`)).json();
                 tbl.innerHTML = "";
                 if (res.length === 0) {
-                    tbl.innerHTML = `<tr><td colspan="4" class="p-16 text-center text-slate-400 font-bold tracking-widest">TIDAK ADA DATA USER</td></tr>`;
+                    tbl.innerHTML = `<tr><td colspan="8" class="p-16 text-center text-slate-400 font-bold tracking-widest">TIDAK ADA DATA USER</td></tr>`;
                     return;
                 }
-                res.forEach(u => {
-                    const btn = u.status === "Pending" ?
-                        `<button onclick="act('${u.email}', '${u.wa}')" class="bg-blue-600 text-white px-5 py-2 rounded-xl font-[900] text-[9px] uppercase tracking-widest hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/30 transition-all transform hover:-translate-y-0.5">AKTIFKAN</button>` :
-                        `<span class="text-green-500 font-[900] text-[9px] uppercase tracking-widest flex items-center justify-end gap-2 opacity-50"><i class="fas fa-check-circle"></i> DONE</span>`;
 
+                // Store data globally to easily fill modal
+                window.userData = res;
+
+                res.forEach((u, index) => {
                     const statusBadge = u.status === 'Active' ?
                         '<span class="status-badge bg-green-50 text-green-600 border border-green-100">ACTIVE</span>' :
                         '<span class="status-badge bg-orange-50 text-orange-500 border border-orange-100">PENDING</span>';
 
                     tbl.innerHTML += `
                         <tr class="hover:bg-blue-50/50 transition-colors duration-300 group">
-                            <td class="p-8">
-                                <div class="flex items-center gap-5">
-                                    <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 font-bold text-xs group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300 shadow-sm">
-                                        ${u.name.charAt(0)}
-                                    </div>
-                                    <div>
-                                        <p class="font-[800] text-slate-800 text-sm tracking-tight">${u.name}</p>
-                                        <div class="flex items-center gap-3 mt-1.5">
-                                            <p class="text-[10px] text-slate-400 font-medium bg-slate-50 px-2 py-0.5 rounded-md border border-slate-100"><i class="fab fa-whatsapp mr-1"></i> ${u.wa}</p>
-                                        </div>
-                                        <p class="text-[10px] text-slate-400 mt-1 font-medium pl-1">${u.email}</p>
-                                    </div>
-                                </div>
+                            <td class="p-6 text-[10px] text-slate-400 font-mono">${new Date(u.timestamp).toLocaleDateString()}</td>
+                            <td class="p-6 font-bold text-slate-700">${u.username}</td>
+                            <td class="p-6 text-slate-500">${u.role}</td>
+                            <td class="p-6 text-slate-800">${u.name}</td>
+                            <td class="p-6">
+                                <div class="text-[10px] text-slate-400">E: ${u.email}</div>
+                                <div class="text-[10px] text-slate-400">W: ${u.wa}</div>
                             </td>
-                            <td class="p-8 text-center">
-                                <a href="${u.proof}" target="_blank" class="inline-flex items-center gap-2 bg-white border border-slate-200 text-slate-600 px-4 py-2 rounded-xl text-[9px] font-[800] uppercase tracking-widest hover:bg-slate-900 hover:text-white hover:border-slate-900 transition-all transform hover:scale-105 shadow-sm">
-                                    <i class="fas fa-image"></i> Bukti
-                                </a>
+                            <td class="p-6">
+                                <span class="block text-slate-700">${u.package}</span>
+                                <span class="text-[9px] text-slate-400">${u.details}</span>
                             </td>
-                            <td class="p-8 text-center">${statusBadge}</td>
-                            <td class="p-8 text-right">${btn}</td>
+                            <td class="p-6">${statusBadge}</td>
+                            <td class="p-6 text-center">
+                                ${u.proof ? `<a href="${u.proof}" target="_blank" class="text-blue-500 hover:text-blue-700"><i class="fas fa-external-link-alt"></i></a>` : '-'}
+                            </td>
+                            <td class="p-6 text-right">
+                                <button onclick="openModal(${index})" class="bg-slate-100 text-slate-500 px-3 py-1.5 rounded-lg text-[9px] font-[900] uppercase tracking-widest hover:bg-blue-600 hover:text-white transition-all">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                            </td>
                         </tr>`;
                 });
             } catch (e) {
                 console.error(e);
-                tbl.innerHTML = `<tr><td colspan="4" class="p-16 text-center text-red-500 font-bold tracking-widest bg-red-50/50">GAGAL MEMUAT DATA SERVER</td></tr>`;
+                tbl.innerHTML = `<tr><td colspan="8" class="p-16 text-center text-red-500 font-bold tracking-widest bg-red-50/50">GAGAL MEMUAT DATA SERVER</td></tr>`;
             }
         }
 
-        async function act(email, wa) {
-            if (!confirm("Konfirmasi: Aktifkan akun member ini?")) return;
+        function openModal(index) {
+            const u = window.userData[index];
+            document.getElementById('editUsername').value = u.username;
+            document.getElementById('editRole').value = u.role;
+            document.getElementById('editName').value = u.name;
+            document.getElementById('editEmail').value = u.email;
+            document.getElementById('editWa').value = u.wa.replace("'", ""); // Clean WA
+            document.getElementById('editPackage').value = u.package;
+            document.getElementById('editDetails').value = u.details;
+            document.getElementById('editStatus').value = u.status;
+
+            document.getElementById('editModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('editModal').classList.add('hidden');
+        }
+
+        async function saveUser(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnSave');
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Saving...';
+            btn.disabled = true;
+
+            const payload = {
+                action: 'updateUser',
+                username: document.getElementById('editUsername').value,
+                role: document.getElementById('editRole').value,
+                name: document.getElementById('editName').value,
+                email: document.getElementById('editEmail').value,
+                wa: document.getElementById('editWa').value,
+                package: document.getElementById('editPackage').value,
+                details: document.getElementById('editDetails').value,
+                status: document.getElementById('editStatus').value
+            };
+
             try {
-                await fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: "updateStatus", email: email, wa: wa }) });
-                showToast("Akun Berhasil Diaktifkan!", "success");
-                fetchU();
-            } catch (e) {
-                showToast("Gagal mengupdate status.", "error");
+                const res = await (await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                })).json();
+
+                if (res.status === 'success') {
+                    showToast("Data Berhasil Disimpan", "success");
+                    closeModal();
+                    fetchU(); // Refresh table
+                } else {
+                    showToast("Gagal: " + res.message, "error");
+                }
+            } catch (err) {
+                console.error(err);
+                showToast("Kesalahan Koneksi", "error");
+            } finally {
+                btn.innerHTML = 'Simpan Perubahan';
+                btn.disabled = false;
             }
         }
     </script>

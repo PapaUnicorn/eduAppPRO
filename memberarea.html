@@ -186,26 +186,20 @@
         }, 1000);
 
         // Init
+        // Init
         async function init() {
-            // DIRECT ACCESS - NO API CHECK
-            const user = {
-                name: 'Guest Member',
-                email: 'welcome@edunexus.pro',
-                plan: 'Gold', // Grants all access
-                app: 'All Access'
-            };
+            const storedUser = localStorage.getItem('edunexus_user');
+
+            if (!storedUser) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            const user = JSON.parse(storedUser);
             renderSidebar(user);
         }
 
         function renderSidebar(user) {
-            // Safety checks
-            const safeUser = {
-                name: user.name || 'Member',
-                email: user.email || 'No Email',
-                plan: user.plan || 'Silver',
-                app: user.app || 'eduLessonPRO'
-            };
-
             // Skeleton Off, Profile On
             document.getElementById('user-skeleton').classList.add('hidden');
             const profile = document.getElementById('user-profile');
@@ -213,19 +207,19 @@
             profile.classList.add('flex');
 
             // Populate Data
-            document.getElementById('user-name').innerText = safeUser.name;
-            document.getElementById('user-email').innerText = safeUser.email;
-            document.getElementById('user-initial').innerText = safeUser.name.charAt(0);
+            document.getElementById('user-name').innerText = user.name || 'Member';
+            document.getElementById('user-email').innerText = user.email || 'No Email';
+            document.getElementById('user-initial').innerText = (user.name || 'U').charAt(0);
             try {
-                document.getElementById('welcome-name').innerText = safeUser.name.split(' ')[0];
+                document.getElementById('welcome-name').innerText = user.name.split(' ')[0];
             } catch (e) {
-                document.getElementById('welcome-name').innerText = safeUser.name;
+                document.getElementById('welcome-name').innerText = user.name;
             }
 
             // Badge
             const badge = document.getElementById('plan-badge');
-            badge.innerText = safeUser.plan;
-            if (safeUser.plan.toLowerCase() === 'gold') {
+            badge.innerText = user.package || 'Gold';
+            if ((user.package || '').toLowerCase() === 'gold') {
                 badge.className = "absolute top-0 right-0 px-3 py-1 bg-gradient-to-r from-yellow-400 to-yellow-600 text-white rounded-bl-xl shadow-sm text-[9px] font-bold uppercase tracking-widest";
             } else {
                 badge.className = "absolute top-0 right-0 px-3 py-1 bg-slate-200 text-slate-500 rounded-bl-xl text-[9px] font-bold uppercase tracking-widest";
@@ -239,14 +233,43 @@
                 "WordSearch": { name: "EduGame: Word Search", link: "wordsearch.html", icon: "fa-search" }
             };
 
-            // ALWAYS GIVE FULL ACCESS
-            let allowedApps = Object.keys(appsMap);
+            let allowedApps = [];
+
+            // Access Logic
+            // If user.access contains 'ALL', give everything.
+            // Otherwise, filter based on substrings in allowedApps (coming from access array)
+            const accessList = user.access || [];
+
+            if (accessList.includes('ALL')) {
+                allowedApps = Object.keys(appsMap);
+            } else {
+                // If silver, maybe it's a comma separated string in the first element or multiple elements
+                // The gas script returns [packageDetails] or ['ALL']
+                const details = accessList[0] || "";
+                const targetStr = details.toLowerCase();
+
+                Object.keys(appsMap).forEach(key => {
+                    // Check if key or name is in the details string
+                    if (targetStr.includes(key.toLowerCase()) || targetStr.includes(appsMap[key].name.toLowerCase())) {
+                        allowedApps.push(key);
+                    }
+                });
+
+                // Fallback: If nothing matched but they are silver, maybe just give generic access or nothing?
+                // User said "hanya akses aplikasi yang ia daftar saja". If empty, they see nothing.
+            }
 
             const appContainer = document.getElementById('app-list');
             appContainer.innerHTML = '';
 
+            if (allowedApps.length === 0) {
+                appContainer.innerHTML = '<div class="p-4 text-xs text-slate-400 text-center">Tidak ada aplikasi yang tersedia untuk paket Anda.</div>';
+            }
+
             allowedApps.forEach(key => {
-                const app = appsMap[key] || appsMap["eduLessonPRO"];
+                const app = appsMap[key];
+                if (!app) return;
+
                 const btn = document.createElement('button');
                 btn.className = "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-xs font-bold text-slate-500 hover:bg-white hover:shadow-md hover:text-blue-600 transition-all duration-300 group";
                 btn.onclick = () => loadApp(app.name, app.link, app.icon, btn);
@@ -301,6 +324,7 @@
 
         function logout() {
             // Redirect to home
+            localStorage.removeItem('edunexus_user');
             window.location.href = 'index.html';
         }
 
