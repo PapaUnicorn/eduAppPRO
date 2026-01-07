@@ -174,6 +174,8 @@
                                 class="w-full p-4 rounded-2xl text-xs font-bold glass-input text-slate-700 outline-none">
                             <input type="text" id="materi" placeholder="Materi Pokok / Judul Bab"
                                 class="w-full p-4 rounded-2xl text-xs font-bold glass-input text-slate-700 outline-none">
+                            <input type="text" id="tp" placeholder="Tujuan Pembelajaran"
+                                class="w-full p-4 rounded-2xl text-xs font-bold glass-input text-slate-700 outline-none">
 
                             <select id="model_ajar"
                                 class="w-full p-4 rounded-2xl text-xs font-bold glass-input text-slate-600 cursor-pointer">
@@ -318,6 +320,7 @@
                 kelas: document.getElementById('kelas').value || "[Kelas]",
                 mapel: document.getElementById('mapel').value || "[Mapel]",
                 materi: document.getElementById('materi').value || "[Judul]",
+                tp: document.getElementById('tp').value || "[Tujuan Pembelajaran]",
                 model: document.getElementById('model_ajar').value,
                 durasi: document.getElementById('durasi').value || "0",
                 pertemuan: document.getElementById('pertemuan').value || "0",
@@ -333,7 +336,7 @@ DATA INPUT:
 - Nama Guru: ${data.guru} | Institusi: ${data.sekolah}
 - Jenjang/Fase/Kelas: ${data.jenjang} / ${data.fase} / ${data.kelas}
 - Mata Pelajaran: ${data.mapel} | Materi Pokok: ${data.materi}
-- Tujuan Pembelajaran / Topik: ${data.materi}
+- Tujuan Pembelajaran / Topik: ${data.tp}
 - Alokasi Waktu: ${data.durasi} Menit (${data.pertemuan} Pertemuan)
 - Model Pembelajaran: ${data.model}
 - Profil Pelajar Pancasila: ${data.p3}
@@ -362,7 +365,7 @@ INSTRUKSI KHUSUS:
 **TABEL 2: KOMPONEN INTI**
 | Komponen | Deskripsi |
 | :--- | :--- |
-| Tujuan Pembelajaran | (Jabarkan TP berdasarkan materi: ${data.materi}) |
+| Tujuan Pembelajaran | (Jabarkan TP berdasarkan materi: ${data.tp}) |
 | Pemahaman Bermakna | (Manfaat materi ini di kehidupan nyata) |
 | Pertanyaan Pemantik | (1-2 pertanyaan yang memancing rasa ingin tahu) |
 | Asesmen | 1. Diagnostik (Awal)<br>2. Formatif (Proses)<br>3. Sumatif (Lingkup Materi) |
