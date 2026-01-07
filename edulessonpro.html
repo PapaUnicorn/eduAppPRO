@@ -325,42 +325,61 @@
                 lulusan: Array.from(document.querySelectorAll('input[name="lulusan"]:checked')).map(cb => cb.value).join(", ") || "[Lulusan]"
             };
 
-            const prompt = `Bertindaklah sebagai Spesialis Pengembang Kurikulum Kemendikbud sekaligus Pakar Pendidikan Advent yang ahli dalam mengintegrasikan Faith and Values (IFVL). Tugas Anda adalah menyusun Modul Ajar Kurikulum Merdeka yang komprehensif, sangat detail, dan kaya akan landasan teori.
-            
-DATA INPUT SAYA:
+            const prompt = `Berperanlah sebagai **Praktisi Kurikulum Merdeka** dan Pengembang Perangkat Ajar profesional.
+
+Saya membutuhkan **MODUL AJAR (RPP Plus)** yang sangat detail untuk satu pertemuan berdasarkan data berikut:
+
+DATA INPUT:
 - Nama Guru: ${data.guru} | Institusi: ${data.sekolah}
 - Jenjang/Fase/Kelas: ${data.jenjang} / ${data.fase} / ${data.kelas}
 - Mata Pelajaran: ${data.mapel} | Materi Pokok: ${data.materi}
+- Tujuan Pembelajaran / Topik: ${data.materi}
+- Alokasi Waktu: ${data.durasi} Menit (${data.pertemuan} Pertemuan)
 - Model Pembelajaran: ${data.model}
-- Durasi: ${data.durasi} Menit | Pertemuan: ${data.pertemuan}
-- Profil Pelajar Pancasila (P3): ${data.p3}
-- Dimensi Profil Lulusan: ${data.lulusan}
+- Profil Pelajar Pancasila: ${data.p3}
+- Target Profil Lulusan: ${data.lulusan}
 
-INSTRUKSI KHUSUS UNTUK KEDALAMAN KONTEN:
-1. PENJELASAN TEORI & TOPIK: Sebelum masuk ke inti, berikan penjelasan teori pendukung topik ini secara komprehensif dan detail. Hubungkan materi akademik dengan landasan filosofis kurikulum merdeka dan nilai-nilai Alkitabiah secara akademik.
-2. JANGAN MEMBUAT ALAKADARNYA: Saya ingin konten yang sangat detail, inspiratif, dan siap pakai secara profesional.
+INSTRUKSI KHUSUS:
+1.  Sajikan SELURUH output dalam bentuk **TABEL** agar mudah disalin dan dibaca.
+2.  Pada bagian **Kegiatan Inti**, hindari kalimat umum seperti "Guru menjelaskan". Gunakan kalimat instruksi konkrit, contoh: "Guru menayangkan video tentang...", "Siswa dalam kelompok mengidentifikasi...", "Guru memberikan pertanyaan pemantik berupa...".
+3.  Pastikan sintaks pembelajaran sesuai dengan Model yang dipilih (misal: sintaks ${data.model}).
+4.  Integrasikan nilai-nilai Profil Pelajar Pancasila dan Profil Lulusan yang dipilih ke dalam kegiatan pembelajaran.
 
-STRUKTUR OUTPUT YANG WAJIB DIKUTI:
+---
 
-A. IDENTITAS & KOMPETENSI (Tabel)
-Sajikan data input dalam tabel rapi, lengkapi dengan Capaian Pembelajaran (CP) dan Tujuan Pembelajaran (TP) yang tepat.
+### FORMAT OUTPUT YANG DIMINTA:
 
-B. INTEGRASI IFVL (GMAHK)
-Identifikasi konsep Alkitabiah yang relevan. Sertakan minimal 1 ayat Alkitab atau kutipan dari Roh Nubuat (Ellen G. White) yang mendasari materi ini. Jelaskan kaitan spiritualnya secara mendalam.
+**TABEL 1: INFORMASI UMUM**
+| Komponen | Deskripsi |
+| :--- | :--- |
+| Identitas Sekolah | ${data.sekolah}, ${data.guru}, ${data.mapel}, ${data.fase}/${data.kelas} |
+| Kompetensi Awal | (Pengetahuan prasyarat siswa) |
+| Profil Pelajar Pancasila | ${data.p3} |
+| Sarana & Prasarana | (Alat, Media, Sumber Belajar) |
+| Target Peserta Didik | (Reguler / Tipikal) |
+| Model Pembelajaran | ${data.model} |
 
-C. LANGKAH PEMBELAJARAN (Tabel 3 Kolom)
-Susun langkah kegiatan (Pendahuluan, Inti sesuai sintaks ${data.model}, Penutup) secara kronologis dalam tabel:
-- Kolom 1: Tahapan (Fase Pembelajaran)
-- Kolom 2: Detail Kegiatan (Sangat detail, instruksi guru, reaksi murid, dan sisipan integrasi nilai IFVL)
-- Kolom 3: Durasi Waktu (Breakdown per menit hingga total ${data.durasi} menit).
+**TABEL 2: KOMPONEN INTI**
+| Komponen | Deskripsi |
+| :--- | :--- |
+| Tujuan Pembelajaran | (Jabarkan TP berdasarkan materi: ${data.materi}) |
+| Pemahaman Bermakna | (Manfaat materi ini di kehidupan nyata) |
+| Pertanyaan Pemantik | (1-2 pertanyaan yang memancing rasa ingin tahu) |
+| Asesmen | 1. Diagnostik (Awal)<br>2. Formatif (Proses)<br>3. Sumatif (Lingkup Materi) |
 
-D. LKPD (LEMBAR KERJA PESERTA DIDIK)
-Buat LKPD interaktif yang sangat detail (Tugas eksplorasi akademik + Faith Link). Sertakan 10 soal Latihan (Pilihan Ganda/Essay) lengkap dengan kunci jawaban dan penjelasan mendalam untuk setiap jawaban.
+**TABEL 3: LANGKAH PEMBELAJARAN (SKENARIO)**
+| Tahapan & Waktu | Kegiatan Guru & Peserta Didik (Konkrit & Detail) |
+| :--- | :--- |
+| **Pendahuluan** | 1. Guru membuka salam dan doa bersama.<br>2. Guru mengecek kehadiran...<br>3. Apersepsi: ...<br>4. Menyampaikan tujuan pembelajaran... |
+| **Kegiatan Inti** | *(Sesuaikan dengan Sintaks ${data.model})*<br>1. **Fase 1:** Guru menampilkan... Siswa mengamati...<br>2. **Fase 2:** Siswa dibagi kelompok...<br>3. **Fase 3:** Siswa mengerjakan LKPD...<br>*(Detailkan langkah sampai evaluasi)* |
+| **Penutup** | 1. Siswa menyimpulkan materi...<br>2. Guru memberikan penguatan...<br>3. Refleksi dan Doa penutup. |
 
-E. ASESMEN & RUBRIK (Tabel)
-Buat rubrik penilaian ketercapaian akademik dan Dimensi Profil Lulusan yang dipilih secara terukur.
+---
 
-Gunakan bahasa Indonesia yang profesional, edukatif, dan inspiratif. Format seluruh output dalam MARKDOWN agar mudah dibaca.`;
+**PENTING:**
+Setelah tabel selesai dibuat, mohon berikan teks penutup berikut secara **tebal (Bold)** dan terpisah dari tabel:
+
+**"Modul Ajar (Skenario) sudah siap. Apakah Anda ingin saya melanjutkan membuat Lampiran LKPD (Lembar Kerja Peserta Didik) dan Rubrik Penilaian untuk pertemuan ini? (Ketik 'Ya' untuk lanjut)"**`;
 
             // Auto Copy to Clipboard
             navigator.clipboard.writeText(prompt).then(() => {
