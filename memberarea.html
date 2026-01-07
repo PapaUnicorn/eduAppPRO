@@ -55,24 +55,28 @@
 
     <div class="flex h-full">
         <!-- Sidebar -->
-        <aside
-            class="w-80 h-full glass-sidebar flex flex-col justify-between py-8 px-6 z-20 shadow-xl shadow-blue-100/50">
-            <div>
-                <!-- Brand -->
-                <div class="flex items-center gap-2 mb-10 px-2">
+        <aside class="w-80 h-full glass-sidebar flex flex-col z-20 shadow-xl shadow-blue-100/50">
+
+            <!-- Brand (Fixed Top) -->
+            <div class="flex-none p-6 pb-2">
+                <div class="flex items-center gap-2 px-2">
                     <span class="text-2xl font-[900] text-slate-900 tracking-tighter italic"><span
                             class="text-blue-600">EDU</span>NEXUS<span class="text-slate-400">PRO</span></span>
                 </div>
+            </div>
+
+            <!-- Scrollable Content -->
+            <div class="flex-1 overflow-y-auto p-6 pt-4 space-y-8 custom-scrollbar">
 
                 <!-- User Profile Skeleton -->
-                <div id="user-skeleton" class="animate-pulse mb-8 p-4 rounded-2xl bg-white border border-slate-100">
+                <div id="user-skeleton" class="animate-pulse p-4 rounded-2xl bg-white border border-slate-100">
                     <div class="h-4 bg-slate-200 rounded w-3/4 mb-3"></div>
                     <div class="h-3 bg-slate-200 rounded w-1/2"></div>
                 </div>
 
                 <!-- User Profile -->
                 <div id="user-profile"
-                    class="hidden mb-8 p-5 rounded-2xl bg-white border border-slate-100 shadow-sm relative overflow-hidden">
+                    class="hidden p-5 rounded-2xl bg-white border border-slate-100 shadow-sm relative overflow-hidden group hover:shadow-md transition-all">
                     <div id="plan-badge"
                         class="absolute top-0 right-0 px-3 py-1 bg-slate-100 text-[9px] font-bold uppercase tracking-widest text-slate-500 rounded-bl-xl">
                         LOADING</div>
@@ -88,19 +92,14 @@
                     </div>
                 </div>
 
-                <!-- Nav Menu -->
-                <div class="space-y-2">
-                    <p class="px-2 text-[10px] font-extrabold text-slate-400 uppercase tracking-[0.2em] mb-4">Aplikasi
-                        Saya</p>
-                    <nav id="app-list" class="space-y-2">
-                        <!-- App Items will be injected here -->
-                        <div class="p-3 rounded-xl bg-slate-100 animate-pulse h-10 w-full"></div>
-                    </nav>
+                <!-- Nav Menu Container -->
+                <div id="nav-container" class="space-y-6">
+                    <!-- Dynamic Content -->
                 </div>
             </div>
 
-            <!-- Role Switcher & Bottom Actions -->
-            <div class="space-y-4">
+            <!-- Bottom Actions (Fixed Bottom) -->
+            <div class="flex-none p-6 pt-4 border-t border-slate-100/50 bg-white/50 backdrop-blur-sm space-y-4">
                 <div class="p-4 rounded-2xl bg-purple-50 border border-purple-100">
                     <p class="text-[10px] font-bold text-purple-400 uppercase tracking-widest mb-3 text-center">Switch
                         Role</p>
@@ -121,7 +120,7 @@
                     <i class="fas fa-sign-out-alt"></i> Logout
                 </button>
 
-                <p class="text-[9px] text-center text-slate-300 font-bold uppercase tracking-widest">v2.5.0 Stable</p>
+                <p class="text-[9px] text-center text-slate-300 font-bold uppercase tracking-widest">v2.6.0 Stable</p>
             </div>
         </aside>
 
@@ -239,43 +238,85 @@
             }
 
             // Build App List
-            const appsMap = {
-                "eduLessonPRO": { name: "eduLessonPRO", link: "edulessonpro.html", icon: "fa-book-open" },
-                "ATPMaker": { name: "ATP Maker", link: "atpmaker.html", icon: "fa-list-check" },
-                "eduExamPRO": { name: "eduExamPRO", link: "eduexampro.html", icon: "fa-file-signature" },
-                "CrosswordMaker": { name: "Crossword Maker", link: "tts.html", icon: "fa-border-all" },
-                "WordSearchMaker": { name: "Word Search Maker", link: "wordsearch.html", icon: "fa-search" }
-            };
+            // Define Menu Groups
+            const menuGroups = [
+                {
+                    title: "Main Apps",
+                    apps: [
+                        { name: "eduLessonPRO", link: "edulessonpro.html", icon: "fa-book-open", role: "all" },
+                        { name: "ATP Maker", link: "atpmaker.html", icon: "fa-list-check", role: "gold" },
+                        { name: "eduExamPRO", link: "eduexampro.html", icon: "fa-file-signature", role: "gold" }
+                    ]
+                },
+                {
+                    title: "Activity Maker",
+                    apps: [
+                        { name: "Crossword Maker", link: "tts.html", icon: "fa-border-all", role: "gold" },
+                        { name: "Word Search Maker", link: "wordsearch.html", icon: "fa-search", role: "gold" }
+                    ]
+                },
+                {
+                    title: "Simulations",
+                    apps: [
+                        { name: "Lesson Simulations", link: "about:blank", icon: "fa-flask", role: "gold", action: "coming_soon" }
+                    ]
+                }
+            ];
 
-            let allowedApps = [];
-            if (user.plan.toLowerCase() === 'gold') {
-                allowedApps = Object.keys(appsMap);
-            } else if (appsMap[user.app]) {
-                allowedApps = [user.app];
-            }
+            const navContainer = document.getElementById('nav-container');
+            navContainer.innerHTML = '';
 
-            const appContainer = document.getElementById('app-list');
-            appContainer.innerHTML = '';
+            menuGroups.forEach(group => {
+                // Filter apps based on user plan/role
+                const allowedApps = group.apps.filter(app => {
+                    if (user.plan.toLowerCase() === 'gold') return true;
+                    return app.name === user.app; // Very basic check for non-gold
+                });
 
-            allowedApps.forEach(key => {
-                const app = appsMap[key];
-                const btn = document.createElement('button');
-                btn.className = "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-xs font-bold text-slate-500 hover:bg-white hover:shadow-md hover:text-blue-600 transition-all duration-300 group";
-                btn.onclick = () => loadApp(app.name, app.link, app.icon, btn);
-                btn.innerHTML = `
-                    <div class="w-8 h-8 rounded-lg bg-white border border-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition-colors shadow-sm">
-                        <i class="fas ${app.icon}"></i>
-                    </div>
-                    <span>${app.name}</span>
-                    <i class="fas fa-chevron-right ml-auto opacity-0 group-hover:opacity-100 transition-opacity text-[10px]"></i>
-                `;
-                appContainer.appendChild(btn);
+                if (allowedApps.length > 0) {
+                    // Create Group Container
+                    const groupDiv = document.createElement('div');
+
+                    // Group Title
+                    const groupTitle = document.createElement('p');
+                    groupTitle.className = "px-2 text-[10px] font-extrabold text-slate-400 uppercase tracking-[0.2em] mb-2";
+                    groupTitle.innerText = group.title;
+                    groupDiv.appendChild(groupTitle);
+
+                    // Apps List
+                    const appList = document.createElement('nav');
+                    appList.className = "space-y-2";
+
+                    allowedApps.forEach(app => {
+                        const btn = document.createElement('button');
+                        btn.className = "w-full flex items-center gap-3 px-4 py-3 rounded-xl text-left text-xs font-bold text-slate-500 hover:bg-white hover:shadow-md hover:text-blue-600 transition-all duration-300 group";
+
+                        if (app.action === 'coming_soon') {
+                            btn.onclick = () => alert("Fitur ini akan segera hadir! 🚀");
+                            btn.style.opacity = "0.6";
+                        } else {
+                            btn.onclick = () => loadApp(app.name, app.link, app.icon, btn);
+                        }
+
+                        btn.innerHTML = `
+                            <div class="w-8 h-8 rounded-lg bg-white border border-slate-100 flex items-center justify-center text-slate-400 group-hover:bg-blue-600 group-hover:text-white transition-colors shadow-sm">
+                                <i class="fas ${app.icon}"></i>
+                            </div>
+                            <span>${app.name}</span>
+                            ${app.action === 'coming_soon' ? '<span class="ml-auto text-[8px] bg-slate-200 px-2 py-1 rounded-full text-slate-500 font-bold">SOON</span>' : '<i class="fas fa-chevron-right ml-auto opacity-0 group-hover:opacity-100 transition-opacity text-[10px]"></i>'}
+                        `;
+                        appList.appendChild(btn);
+                    });
+
+                    groupDiv.appendChild(appList);
+                    navContainer.appendChild(groupDiv);
+                }
             });
         }
 
         function loadApp(name, url, icon, btnElement) {
             // Update Active State
-            document.querySelectorAll('#app-list button').forEach(b => {
+            document.querySelectorAll('#nav-container button').forEach(b => {
                 b.classList.remove('active-nav');
                 b.classList.add('text-slate-500', 'hover:bg-white');
             });
