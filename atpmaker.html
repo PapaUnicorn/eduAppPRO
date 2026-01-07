@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATP & Modul Ajar Maker - Kurikulum Merdeka</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(236, 72, 153, 0.15) 0%, transparent 20%);
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #a5b4fc 0%, #f472b6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 2rem;
+            align-items: start;
+        }
+
+        /* Controls Section */
+        .controls {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            animation: fadeInLeft 0.8s ease-out;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-left: 0.5rem;
+        }
+
+        select, input, textarea {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            outline: none;
+            width: 100%;
+        }
+
+        select:focus, input:focus, textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+        }
+
+        /* Main Content Section */
+        .preview-area {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+            animation: fadeInRight 0.8s ease-out;
+        }
+
+        .content-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            min-height: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
+        .cp-item {
+            background: rgba(15, 23, 42, 0.4);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid var(--primary);
+        }
+
+        .cp-elemen {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+
+        .cp-text {
+            line-height: 1.6;
+            color: #cbd5e1;
+        }
+
+        /* Buttons */
+        .btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.5);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid var(--glass-border);
+            box-shadow: none;
+        }
+        .btn-secondary:hover {
+            background: rgba(30, 41, 59, 1);
+            border-color: var(--text-muted);
+        }
+
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn-icon {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInLeft {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes fadeInRight {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 1px solid var(--glass-border);
+            padding: 2rem;
+            border-radius: 1.5rem;
+            width: 100%;
+            max-width: 500px;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #10b981;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transform: translateY(100px);
+            transition: transform 0.3s ease;
+            z-index: 2000;
+        }
+        
+        .toast.show {
+            transform: translateY(0);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>ATP & Modul Ajar Maker</h1>
+        <p class="subtitle">AI-Powered Curriculum Generator for Kurikulum Merdeka</p>
+    </header>
+
+    <div class="grid">
+        <!-- Sidebar Controls -->
+        <aside class="controls">
+            <div class="control-group">
+                <label for="faseSelect">Pilih Fase</label>
+                <select id="faseSelect" onchange="updateMapel()">
+                    <option value="" disabled selected>-- Pilih Fase --</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <label for="mapelSelect">Pilih Mata Pelajaran</label>
+                <select id="mapelSelect" onchange="renderCP()">
+                    <option value="" disabled selected>-- Pilih Mapel --</option>
+                </select>
+            </div>
+
+            <div class="btn-group">
+                <button onclick="generateATP()" class="btn">
+                    <span>✨ GENERATE ATP PROMPT</span>
+                </button>
+                <button onclick="generateProta()" class="btn btn-secondary">
+                    <span>📅 PROTA PROMPT</span>
+                </button>
+                <button onclick="generatePromes()" class="btn btn-secondary">
+                    <span>🗓️ PROMES PROMPT</span>
+                </button>
+                <button onclick="openModulModal()" class="btn" style="background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);">
+                    <span>📝 MODUL AJAR MAKER</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="preview-area">
+            <div class="content-card">
+                <div class="card-header">
+                    <h2 class="card-title">Capaian Pembelajaran (CP)</h2>
+                    <div id="kelasBadge" style="background: var(--primary); padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.8rem; font-weight: 600;">-</div>
+                </div>
+                <div id="cpContent">
+                    <div class="loading">Silakan pilih Fase dan Mata Pelajaran terlebih dahulu.</div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Modal for Modul Ajar -->
+<div class="modal-overlay" id="modulModal">
+    <div class="modal-content">
+        <h3 class="card-title" style="margin-bottom: 1.5rem;">Buat Modul Ajar</h3>
+        <div class="control-group" style="margin-bottom: 1rem;">
+            <label>Topik / Materi</label>
+            <input type="text" id="modulTopik" placeholder="Contoh: Ekosistem">
+        </div>
+        <div class="control-group" style="margin-bottom: 1rem;">
+            <label>Tujuan Pembelajaran (TP)</label>
+            <textarea id="modulTP" rows="2" placeholder="Contoh: Peserta didik dapat mengidentifikasi komponen ekosistem..."></textarea>
+        </div>
+        <div class="control-group" style="margin-bottom: 1rem;">
+            <label>Alokasi Waktu</label>
+            <input type="text" id="modulWaktu" placeholder="Contoh: 2 JP x 45 Menit">
+        </div>
+        <div class="control-group" style="margin-bottom: 1.5rem;">
+            <label>Model Pembelajaran</label>
+            <input type="text" id="modulModel" placeholder="Contoh: Problem Based Learning (PBL)">
+        </div>
+        
+        <div style="display: flex; gap: 1rem;">
+            <button onclick="closeModulModal()" class="btn btn-secondary" style="flex: 1;">Batal</button>
+            <button onclick="generateModulAjar()" class="btn" style="flex: 1;">Generate Prompt</button>
+        </div>
+    </div>
+</div>
+
+<div class="toast" id="toast">Prompt Copied to Clipboard!</div>
+
+<script>
+    let RAW_DATA = [];
+    let NESTED_DATA = {};
+    
+    // Config Class mapping
+    const CLASS_MAPPING = {
+        "Fase A": "Kelas 1-2 SD",
+        "Fase B": "Kelas 3-4 SD",
+        "Fase C": "Kelas 5-6 SD",
+        "Fase D": "Kelas 7-9 SMP",
+        "Fase E": "Kelas 10 SMA",
+        "Fase F": "Kelas 11-12 SMA"
+    };
+
+    async function loadData() {
+        try {
+            const response = await fetch('capaian_pembelajaran.json');
+            NESTED_DATA = await response.json();
+            
+            // Flatten Data for compatibility with user snippet logic
+            RAW_DATA = [];
+            for (const [fase, mapels] of Object.entries(NESTED_DATA)) {
+                const kelasStr = CLASS_MAPPING[fase] || "Umum";
+                for (const [mapel, elements] of Object.entries(mapels)) {
+                    elements.forEach(el => {
+                        RAW_DATA.push({
+                            f: fase,
+                            k: kelasStr,
+                            m: mapel,
+                            e: el.Elemen,
+                            cp: el['Capaian Pembelajaran']
+                        });
+                    });
+                }
+            }
+            
+            initSelects();
+        } catch (error) {
+            console.error('Error loading JSON:', error);
+            document.getElementById('cpContent').innerHTML = '<div class="loading" style="color: #ef4444;">Gagal memuat data capaian_pembelajaran.json</div>';
+        }
+    }
+
+    function initSelects() {
+        const faseSelect = document.getElementById('faseSelect');
+        const phases = Object.keys(NESTED_DATA);
+        
+        phases.forEach(p => {
+            const option = document.createElement('option');
+            option.value = p;
+            option.textContent = p + ` (${CLASS_MAPPING[p] || ''})`;
+            faseSelect.appendChild(option);
+        });
+    }
+
+    function updateMapel() {
+        const fase = document.getElementById('faseSelect').value;
+        const mapelSelect = document.getElementById('mapelSelect');
+        mapelSelect.innerHTML = '<option value="" disabled selected>-- Pilih Mapel --</option>';
+        
+        if (fase && NESTED_DATA[fase]) {
+            const mapels = Object.keys(NESTED_DATA[fase]);
+            mapels.forEach(m => {
+                const option = document.createElement('option');
+                option.value = m;
+                option.textContent = m;
+                mapelSelect.appendChild(option);
+            });
+        }
+    }
+
+    function renderCP() {
+        const fase = document.getElementById('faseSelect').value;
+        const mapel = document.getElementById('mapelSelect').value;
+        const contentDiv = document.getElementById('cpContent');
+        const badge = document.getElementById('kelasBadge');
+        
+        if (!fase || !mapel) return;
+
+        // Update Badge
+        const kelas = CLASS_MAPPING[fase];
+        badge.textContent = kelas;
+
+        // Get Data
+        const items = RAW_DATA.filter(item => item.f === fase && item.m === mapel);
+        
+        if (items.length === 0) {
+            contentDiv.innerHTML = '<div class="loading">Tidak ada data untuk kombinasi ini.</div>';
+            return;
+        }
+
+        let html = '';
+        items.forEach(item => {
+            html += `
+                <div class="cp-item">
+                    <div class="cp-elemen">${item.e}</div>
+                    <div class="cp-text">${item.cp}</div>
+                </div>
+            `;
+        });
+        contentDiv.innerHTML = html;
+    }
+
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            const toast = document.getElementById('toast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        });
+    }
+
+    function generateATP() {
+        const faseSelect = document.getElementById('faseSelect');
+        const mapelSelect = document.getElementById('mapelSelect');
+        
+        if (!faseSelect.value || !mapelSelect.value) {
+            alert("Harap pilih Fase dan Mapel terlebih dahulu.");
+            return;
+        }
+
+        const fase = faseSelect.value;
+        const mapel = mapelSelect.value;
+        const kelas = CLASS_MAPPING[fase];
+
+        const dataCP = RAW_DATA.filter(item => item.f === fase && item.m === mapel);
+        let cpString = "";
+        dataCP.forEach(item => {
+            cpString += `> [ELEMEN: ${item.e}]\n> "${item.cp}"\n\n`;
+        });
+
+        const prompt = `Berperanlah sebagai Ahli Kurikulum Merdeka.
+Saya minta Anda menyusun **Alur Tujuan Pembelajaran (ATP)** berdasarkan data riil berikut:
+
+DATA:
+- Mapel: ${mapel}
+- Fase: ${fase} (${kelas})
+
+DETAIL CP (CAPAIAN PEMBELAJARAN):
+${cpString}
+
+INSTRUKSI:
+1. Analisis setiap Elemen dan CP di atas.
+2. Pecah menjadi Tujuan Pembelajaran (TP) yang konkret dan terukur.
+3. Susun dalam tabel dengan format kolom berikut:
+   | No | Elemen CP | Tujuan Pembelajaran (TP) | Materi Inti | Aktivitas Pembelajaran Singkat | Asesmen (Formatif/Sumatif) | Profil Pelajar Pancasila | Alokasi Waktu (JP) |
+
+Pastikan ATP ini logis, beralur dari mudah ke sukar, dan siap dijadikan dasar Modul Ajar.`;
+
+        copyToClipboard(prompt);
+        window.open('https://gemini.google.com', '_blank');
+    }
+
+    function generateProta() {
+        const prompt = `Terima kasih. Sekarang, berdasarkan Tabel ATP yang baru saja Anda susun di atas, tolong buatkan **PROGRAM TAHUNAN (PROTA)**.
+
+KETENTUAN:
+1. Asumsikan 1 Tahun = 2 Semester (Ganjil & Genap).
+2. Distribusikan TP tersebut secara proporsional ke dalam semester.
+3. Gunakan Format Tabel Resmi Dinas:
+   | No | Tujuan Pembelajaran (TP) | Materi Pokok | Alokasi Waktu (JP) | Semester | Keterangan |
+
+Pastikan total JP sesuai dengan standar kalender pendidikan (Minggu Efektif).`;
+        copyToClipboard(prompt);
+    }
+
+    function generatePromes() {
+        const prompt = `Luar biasa. Terakhir, turunkan data tersebut menjadi **PROGRAM SEMESTER (PROMES)** yang sangat rinci (Per Minggu).
+
+Buat tabel matriks "Tabel Cacing" dengan ketentuan:
+1. Kolom Bulan dibagi menjadi 5 Minggu (1, 2, 3, 4, 5).
+2. Tandai jadwal KBM dengan simbol "X" atau Blok (■).
+3. WAJIB masukkan agenda sekolah non-KBM di kolom minggunya:
+   - MPLS (Juli minggu 1-2)
+   - PTS/STS (Tengah semester)
+   - PAS/SAS (Akhir semester)
+   - Pembagian Rapor & Libur Semester.
+
+Format Tabel:
+| No | TP | Jml JP | Juli (1-5) | Agt (1-5) | Sep (1-5) | Okt (1-5) | Nov (1-5) | Des (1-5) | Ket |
+
+Buat untuk Semester Ganjil terlebih dahulu.`;
+        copyToClipboard(prompt);
+    }
+
+    // Modal Functions
+    function openModulModal() {
+        document.getElementById('modulModal').classList.add('active');
+    }
+    
+    function closeModulModal() {
+        document.getElementById('modulModal').classList.remove('active');
+    }
+
+    function generateModulAjar() {
+        const faseSelect = document.getElementById('faseSelect');
+        const mapelSelect = document.getElementById('mapelSelect');
+        
+        if (!faseSelect.value || !mapelSelect.value) {
+            alert("Harap pilih Fase dan Mapel terlebih dahulu di halaman utama.");
+            closeModulModal();
+            return;
+        }
+
+        const mapel = mapelSelect.value;
+        const fase = faseSelect.value;
+        const kelas = CLASS_MAPPING[fase];
+        const topik = document.getElementById('modulTopik').value || "[ISI MATERI]";
+        const tp = document.getElementById('modulTP').value || "[ISI TP]";
+        const waktu = document.getElementById('modulWaktu').value || "2 JP x 45 Menit";
+        const model = document.getElementById('modulModel').value || "Problem Based Learning";
+
+        const prompt = `Berperanlah sebagai **Praktisi Kurikulum Merdeka** dan Pengembang Perangkat Ajar profesional.
+
+Saya sudah memiliki ATP, Prota, dan Promes. Sekarang, tugas Anda adalah menyusun **MODUL AJAR (RPP Plus)** untuk satu pertemuan/topik spesifik berdasarkan data berikut:
+
+DATA INPUT:
+- Mata Pelajaran: ${mapel}
+- Fase / Kelas: ${fase} / ${kelas}
+- Topik / Materi: ${topik}
+- Tujuan Pembelajaran (TP): ${tp}
+- Alokasi Waktu: ${waktu}
+- Model Pembelajaran: ${model}
+
+INSTRUKSI KHUSUS:
+1.  Sajikan SELURUH output dalam bentuk **TABEL** agar mudah disalin.
+2.  Pada bagian **Kegiatan Inti**, hindari kalimat umum seperti "Guru menjelaskan". Gunakan kalimat instruksi konkrit, contoh: "Guru menayangkan video tentang...", "Siswa dalam kelompok mengidentifikasi...", "Guru memberikan pertanyaan pemantik berupa...".
+3.  Pastikan sintaks pembelajaran sesuai dengan Model yang dipilih (misal: sintaks ${model}).
+
+---
+
+### FORMAT OUTPUT YANG DIMINTA:
+
+**TABEL 1: INFORMASI UMUM**
+| Komponen | Deskripsi |
+| :--- | :--- |
+| Identitas Sekolah | [Nama Sekolah], ${mapel}, ${fase}/${kelas}, [Semester] |
+| Kompetensi Awal | (Pengetahuan prasyarat siswa) |
+| Profil Pelajar Pancasila | (Pilih 2-3 dimensi yang relevan) |
+| Sarana & Prasarana | (Alat, Media, Sumber Belajar) |
+| Target Peserta Didik | (Reguler / Tipikal) |
+| Model Pembelajaran | ${model} |
+
+**TABEL 2: KOMPONEN INTI**
+| Komponen | Deskripsi |
+| :--- | :--- |
+| Tujuan Pembelajaran | ${tp} |
+| Pemahaman Bermakna | (Manfaat materi ini di kehidupan nyata) |
+| Pertanyaan Pemantik | (1-2 pertanyaan yang memancing rasa ingin tahu) |
+| Asesmen | 1. Diagnostik (Awal)<br>2. Formatif (Proses)<br>3. Sumatif (Lingkup Materi) |
+
+**TABEL 3: LANGKAH PEMBELAJARAN (SKENARIO)**
+| Tahapan | Kegiatan Guru & Peserta Didik (Konkrit & Detail) | Alokasi Waktu |
+| :--- | :--- | :--- |
+| **Pendahuluan** | 1. Guru membuka salam dan doa bersama.<br>2. Guru mengecek kehadiran...<br>3. Apersepsi: ...<br>4. Menyampaikan tujuan pembelajaran... | [Waktu] |
+| **Kegiatan Inti** | *(Sesuaikan dengan Sintaks Model Pembelajaran)*<br>1. **Fase 1 (Orientasi Masalah):** Guru menampilkan... Siswa mengamati...<br>2. **Fase 2 (Organisasi):** Siswa dibagi kelompok...<br>3. **Fase 3 (Penyelidikan):** Siswa mengerjakan LKPD...<br>4. ...dan seterusnya sampai evaluasi. | [Waktu] |
+| **Penutup** | 1. Siswa menyimpulkan materi...<br>2. Guru memberikan penguatan...<br>3. Refleksi dan Doa penutup. | [Waktu] |
+
+---
+
+**PENTING:**
+Setelah tabel selesai dibuat, mohon berikan teks penutup berikut secara **tebal (Bold)** dan terpisah dari tabel:
+
+**"Modul Ajar (Skenario) sudah siap. Apakah Anda ingin saya melanjutkan membuat Lampiran LKPD (Lembar Kerja Peserta Didik) dan Rubrik Penilaian untuk pertemuan ini? (Ketik 'Ya' untuk lanjut)"**`;
+
+        copyToClipboard(prompt);
+        closeModulModal();
+    }
+
+    // Initialize
+    loadData();
+</script>
+
+</body>
+</html>
